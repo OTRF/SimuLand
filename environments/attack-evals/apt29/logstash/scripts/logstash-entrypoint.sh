@@ -58,6 +58,10 @@ if [[ -z "$PIPELINE_WORKERS" ]]; then
 fi
 echo "Setting PIPELINE_WORKERS to ${PIPELINE_WORKERS}"
 
+# ** Updating kafka integration plugin to 10.1.0
+# Reference: https://github.com/logstash-plugins/logstash-integration-kafka/pull/8
+logstash-plugin update logstash-integration-kafka
+
 # *** Remove Default config ****
 rm -f /usr/share/logstash/pipeline/logstash.conf
 
