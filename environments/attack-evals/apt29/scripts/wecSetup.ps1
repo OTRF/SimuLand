@@ -7,6 +7,7 @@ param (
     [string]$ServerAddresses
 )
 
-& .\Prepare-Box.ps1
+$ErrorActionPreference = "Stop"
 
+& .\Prepare-Box.ps1
 & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses

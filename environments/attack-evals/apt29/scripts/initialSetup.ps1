@@ -10,6 +10,8 @@ param (
     [switch]$SetDC
 )
 
+$ErrorActionPreference = "Stop"
+
 & .\Prepare-Box.ps1
 
 if ($SetDC){
