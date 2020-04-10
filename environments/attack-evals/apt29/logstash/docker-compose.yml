@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   mordor-logstash:
-    image: docker.elastic.co/logstash/logstash:7.5.2
+    build: ./
     container_name: mordor-logstash
     logging:
       driver: "json-file"

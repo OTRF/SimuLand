@@ -61,6 +61,7 @@ wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubuserconte
 wget -O /opt/logstash/pipeline/eventhub.conf https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/pipeline/eventhub.conf
 wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/config/logstash.yml
 wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/docker-compose.yml
+wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/Dockerfile
 
 chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
@@ -69,4 +70,4 @@ export BOOTSTRAP_SERVERS=$EVENTHUB_NAMESPACE.servicebus.windows.net:9093
 export SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\$ConnectionString password='$EVENTHUB_CONNECTIONSTRING';"
 export EVENTHUB_NAME=$EVENTHUB_NAME
 
-docker-compose -f /opt/logstash/docker-compose.yml up --build -d
+cd /opt/logstash/ && docker-compose -f docker-compose.yml up --build -d
