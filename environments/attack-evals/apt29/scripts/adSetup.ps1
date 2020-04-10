@@ -10,8 +10,6 @@ param(
     [string]$dcVMName
 )
 
-$ErrorActionPreference = "Stop"
-
 & .\Set-OUs.ps1 -domainFQDN $domainFQDN
 & .\Add-DomainUsers.ps1 -domainFQDN $domainFQDN -dcVMName $dcVMName
 & .\Set-AuditSAMRemoteCalls.ps1
