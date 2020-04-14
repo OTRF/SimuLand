@@ -40,16 +40,8 @@ then
     usage
 fi
 
-# ****** Installing latest docker compose
-if [ -x "$(command -v docker-compose)" ]; then
-    echo "removing docker-compose.."
-    rm $(which docker-compose)
-fi
-
-echo "Installing docker-compose.."
-COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
-curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+# Install Docker and Docker-Compose
+./Install-Docker.sh
 
 echo "creating local logstash folders"
 mkdir -p /opt/logstash/scripts
