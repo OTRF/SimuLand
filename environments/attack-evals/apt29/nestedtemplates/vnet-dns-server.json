@@ -14,13 +14,25 @@
                 "description": "The address range of the new VNET in CIDR format"
             }
         },
-        "subnetName": {
+        "subnetName1": {
             "type": "string",
             "metadata": {
                 "description": "The name of the subnet created in the new VNET"
             }
         },
-        "subnetRange": {
+        "subnetRange1": {
+            "type": "string",
+            "metadata": {
+                "description": "The address range of the subnet created in the new VNET"
+            }
+        },
+        "subnetName2": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet created in the new VNET"
+            }
+        },
+        "subnetRange2": {
             "type": "string",
             "metadata": {
                 "description": "The address range of the subnet created in the new VNET"
@@ -56,9 +68,15 @@
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('subnetName')]",
+                        "name": "[parameters('subnetName1')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetRange')]"
+                            "addressPrefix": "[parameters('subnetRange1')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnetName2')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetRange2')]"
                         }
                     }
                 ]
