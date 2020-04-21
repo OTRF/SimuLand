@@ -22,9 +22,6 @@ do
     in
         i) TARGET_IP=$OPTARG;;
         h) usage;;
-        \?) usage;;
-        :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
-        *  ) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
     esac
 done
 
@@ -34,11 +31,15 @@ then
     usage
 fi
 
-#Install dependencies
-apt update -y
-apt install -y socat
+if [ -z "$TARGET_IP" ]; then
+  usage
+else
+    #Install dependencies
+    apt update -y
+    apt install -y socat
 
-# Set up Socat
-socat TCP-LISTEN:443,fork TCP:${TARGET_IP}:443 &
-socat TCP-LISTEN:1234,fork TCP:${TARGET_IP}:1234 &
-socat TCP-LISTEN:8443,fork TCP:${TARGET_IP}:8443 &
+    # Set up Socat
+    socat TCP-LISTEN:443,fork TCP:${TARGET_IP}:443 &
+    socat TCP-LISTEN:1234,fork TCP:${TARGET_IP}:1234 &
+    socat TCP-LISTEN:8443,fork TCP:${TARGET_IP}:8443 &
+fi
