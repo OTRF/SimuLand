@@ -9,10 +9,10 @@ usage(){
     echo
     echo "   -r     Resource Group Name"
     echo "   -s     Storage Account Name"
-    echo "   -c     Computer Names (e.g 'VICTIM01' 'VICTIM02')"
+    echo "   -c     Computer Names (e.g VM01,VM02)"
     echo
     echo "Examples:"
-    echo " $0 -r rgn -s storageaccount01 -c 'VICTIM01' 'VICTIM02'"
+    echo " $0 -r resourcegroup01 -s storageaccount01 -c VM01,VM02"
     echo " "
     exit 1
 }
@@ -36,26 +36,20 @@ then
 fi
 
 if [ -z "$RESOURCE_GROUP" ] || [ -z "$STORAGE_ACCOUNT" ] || [ -z "$COMPUTER_NAMES" ]; then
+  echo "[!] Make sure you provide values for the Resource group (-r), Storage Account (-s) and Computer Names (-c) parameters."
   usage
 else
-    for COMPUTER in "${COMPUTER_NAMES}"; do
+    IFS=', ' read -r -a COMPUTER_ARRAY <<< "$COMPUTER_NAMES"
+    for COMPUTER in "${COMPUTER_ARRAY[@]}"; do
         echo "[+] Starting ${COMPUTER}_PCAP session.."
         az network watcher packet-capture create --resource-group ${RESOURCE_GROUP} --vm ${COMPUTER} --name "${COMPUTER}_PCAP" --storage-account ${STORAGE_ACCOUNT} --filters "
     [
         {
-            \"localIPAddress\":\"10.0.0.0-10.0.0.255\",
-            \"remoteIPAddress\":\"10.0.0.0-10.0.0.255\"
+            \"localIPAddress\":\"10.0.0.0-10.0.255.255\",
+            \"remoteIPAddress\":\"10.0.0.0-10.0.255.255\"
         },
         {
-            \"localIPAddress\":\"10.0.1.0-10.0.1.255\",
-            \"remoteIPAddress\":\"10.0.1.0-10.0.1.255\"
-        },
-        {
-            \"localIPAddress\":\"10.0.0.0-10.0.0.255\",
-            \"remoteIPAddress\":\"192.168.0.1-192.168.0.255\"
-        },
-        {
-            \"localIPAddress\":\"10.0.1.0-10.0.1.255\",
+            \"localIPAddress\":\"10.0.0.0-10.0.255.255\",
             \"remoteIPAddress\":\"192.168.0.1-192.168.0.255\"
         }
     ]

@@ -8,12 +8,12 @@ usage(){
     echo "Usage: $0 [option...]" >&2
     echo
     echo "   -r     Resource Group Name"
-    echo "   -c     Computer Names (e.g 'VICTIM01' 'VICTIM02')"
+    echo "   -c     Computer Names (e.g VM01,VM02)"
     echo "   -l     Location (e.g eastus)"
     echo "   -d     Delete PCAP session (Optional)"
     echo
     echo "Examples:"
-    echo " $0 -r rgn -c 'VICTIM01' 'VICTIM02' -l eastus"
+    echo " $0 -r resourcegroup01 -c VM01,VM02 -l eastus"
     echo " "
     exit 1
 }
@@ -38,9 +38,11 @@ then
 fi
 
 if [ -z "$RESOURCE_GROUP" ] || [ -z "$COMPUTER_NAMES" ] || [ -z "$LOCATION" ]; then
+  echo "[!] Make sure you provide values for the Resource group (-r), Computer Names (-c) parameters and Location (-l)."
   usage
 else
-    for COMPUTER in "${COMPUTER_NAMES}"; do
+    IFS=', ' read -r -a COMPUTER_ARRAY <<< "$COMPUTER_NAMES"
+    for COMPUTER in "${COMPUTER_ARRAY[@]}"; do
         echo "[+] Stopping ${COMPUTER}_PCAP session"
         az network watcher packet-capture stop --name "${COMPUTER}_PCAP" --location ${LOCATION}
         if [ ${DELETE_PCAP_SESSION} ]; then
