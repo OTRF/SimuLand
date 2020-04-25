@@ -38,6 +38,18 @@
                 "description": "The address range of the subnet created in the new VNET"
             }
         },
+        "subnetName3": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet created in the new VNET"
+            }
+        },
+        "subnetRange3": {
+            "type": "string",
+            "metadata": {
+                "description": "The address range of the subnet created in the new VNET"
+            }
+        },
         "DNSServerAddress": {
             "type": "array",
             "metadata": {
@@ -77,6 +89,12 @@
                         "name": "[parameters('subnetName2')]",
                         "properties": {
                             "addressPrefix": "[parameters('subnetRange2')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnetName3')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetRange3')]"
                         }
                     }
                 ]
