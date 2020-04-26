@@ -12,11 +12,11 @@ Step-by-Step: https://blacksmith.readthedocs.io/en/latest/azure_p2s_vpn_setup.ht
 
 After getting a root CA Certificate
 
-* Get the name of it
+* Get the name of it (CN= Root CA Name)
 * Get the root CA cert data by running the following commands and save it to pass it as a parameter while creating the environment.
 
 ```
-openssl x509 -in caCert.pem -outform def | base64 | pbcopy
+openssl x509 -in caCert.pem -outform der | base64 | pbcopy
 ```
 
 ## Deploy Environment
@@ -51,6 +51,8 @@ az group deployment create --name <Deployment Name> --resource-group <Resource G
 ```
 
 ## Connect to Azure Network environment (P2S VPN)
+
+VMs deployed in Azure will not be accessible via their Public IP addresses. A Point-To-Site (P2S) VPN is set up and you will need to use a client certificate signed with the CA's root private key created earlier. 
 
 **Create a client Certificate signed with the CA’s root key**
 
