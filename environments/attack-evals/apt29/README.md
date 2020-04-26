@@ -4,8 +4,6 @@ This Mordor environment was built to replicate a similar setup developed by the 
 
 Full documentation:
 
-# Quick Deployment
-
 ## Point-To-Site VPN Certificates Setup
 
 **Create a root CA Certificate**
@@ -15,7 +13,7 @@ Step-by-Step: https://blacksmith.readthedocs.io/en/latest/azure_p2s_vpn_setup.ht
 After getting a root CA Certificate
 
 * Get the name of it
-* Get the root CA cert data by running the following commands:
+* Get the root CA cert data by running the following commands and save it to pass it as a parameter while creating the environment.
 
 ```
 openssl x509 -in caCert.pem -outform def | base64 | pbcopy
@@ -52,9 +50,20 @@ Day 1
 az group deployment create --name <Deployment Name> --resource-group <Resource Group Name> --template-file azuredeploy.json --parameters adminUsername=<USERNAME> adminPassword='<PASSWORD>' pickScenario="Day1" setDataPipeline=WEF-LOGSTASH-EVENTHUB clientRootCertName=<Root CA Certificate Name> clientRootCertData="<Root CA Cert Data>"
 ```
 
+## Connect to Azure Network environment (P2S VPN)
+
+**Create a client Certificate signed with the CA’s root key**
+
+Step-by-Step: https://blacksmith.readthedocs.io/en/latest/azure_p2s_vpn_setup.html#create-a-client-certificate-signed-with-the-ca-s-root-key
+
 **OpenVPN Client Setup**
 
-Reference: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients
+Step-by-Step: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients
+
+* Use the Client's Certificate (PEM format)
+* Use the Client's Private Key (PEM format)
+
+You will be ready to RDP or SSH to the Windows and Linux endpoints in the environment.
 
 ## Collect Security Event Logs
 
