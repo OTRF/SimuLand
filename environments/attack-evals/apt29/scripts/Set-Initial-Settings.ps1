@@ -58,7 +58,7 @@ Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityPr
 
 # *** Registry modified to disable Windows Defender ***
 # *** # Group Policy modified to disable Windows Defender ***
-# N/A. Handled by AntiMalware Extension
+# N/A. Handled by AntiMalware Extension and Manually
 
 # Configured firewall to allow SMB
 Write-Host "Enable File and Printer Sharing"

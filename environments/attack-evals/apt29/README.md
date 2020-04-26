@@ -99,6 +99,30 @@ kafkacat -b <eventhub-namespace>.servicebus.windows.net:9093 -t <eventhunb-name>
 
 I would run that command right before starting to run every single step in the Apt29 Emulation plans.
 
+## Collect PCAP (East-West)
+
+This environment is set up to start a [packet capture](https://docs.microsoft.com/en-us/azure/network-watcher/network-watcher-packet-capture-overview) via the [Azure Network Watcher extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/network-watcher-windows) installed on every Windows VM. Every PCAP is sent to an Azure storage account defined at the moment you start the pcap session. I would do it once you are ready to start the execution of the emulation plan.
+
+**Start Packet Capture**
+
+```
+bash Start-Packet-Capture.sh -r <Resource Group name> -s <Storage Account name> -c SCRANTON,NASHUA,NEWYORK
+```
+
+**Stop Packet Capture**
+
+You can stop the packet capture sessions by running the following command. This does not delete the packet capture session. You will have to delete it if you want to start it again.
+
+```
+bash Stop-Packet-Capture.sh -r <Resource Group name> -c SCRANTON,NASHUA,NEWYORK -l eastus
+```
+
+You can stop and delete the packet captures with the following command:
+
+```
+bash Stop-Packet-Capture.sh -r <Resource Group name> -c SCRANTON,NASHUA,NEWYORK -l eastus -d
+```
+
 ## Execute Emulation Plan
 
 * Blog Post:
