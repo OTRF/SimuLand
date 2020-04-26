@@ -2,7 +2,7 @@
 
 This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
 
-Full environment documentation:
+Full documentation:
 
 # Quick Deployment
 
@@ -55,3 +55,42 @@ az group deployment create --name <Deployment Name> --resource-group <Resource G
 **OpenVPN Client Setup**
 
 Reference: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients
+
+## Collect Security Event Logs
+
+This environment comes with a data pipeline option to collect security event logs from Windows Endpoints via Windows Event Forwarding (WEF) configurations, send them to a Logstash pipeline which sends them over to an Azure Event Hub. From there, one could use tools such as Kafkacat to connect to the Azure Event hub, consume events being sent over and write them to a local JSON file in real-time.
+
+**Install Kafkacat**
+
+On recent enough Debian systems:
+
+```
+apt-get install kafkacat
+```
+
+And on Mac OS X with homebrew installed:
+
+```
+brew install kafkacat
+```
+
+**Kafkacat Conf File Setup**
+
+Make sure you update the [**Kafkacat.conf**](kafkacat/kafkacat.conf) with the values from your environment.
+
+**Run Kafkacat and Consume Events**
+
+Once you create the environment, you can run the following command to start consuming events from the Azure Event Hub and write them to a local JSON file:
+
+```
+kafkacat -b <eventhub-namespace>.servicebus.windows.net:9093 -t <eventhunb-name> -F kafkacat.conf -C -o end > apt29_evals_$(date +%F%H%M%S).json
+```
+
+I would run that command right before starting to run every single step in the Apt29 Emulation plans.
+
+## Execute Emulation Plan
+
+* Blog Post:
+* APT29 Scenarios:
+    * Day 1
+    * Day 2
