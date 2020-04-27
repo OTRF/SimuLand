@@ -6,4 +6,4 @@ Cloud Templates and scripts to deploy network environments **exclusively** to ge
 
 ## Liability / Responsible Usage
 
-This content is **ONLY**to be used to create research opportunities and generate datasets for the [Mordor project](https://mordordatasets.com).
+This content is **ONLY** to be used to create research opportunities and generate datasets for the [Mordor project](https://mordordatasets.com).

@@ -1,24 +1,24 @@
 facts:
   - trait: target.domain.name
-    value: TGTDOMAIN.lan
+    value: dmevals.local
   - trait: target.winrm.username
-    value: WINRM_USR
+    value: mscott
   - trait: target.winrm.password
-    value: WINRM_PASS
+    value: abc123!D@t3M1k3
   - trait: target.winrm.remote_host
-    value: WINRM_REMOTE_HOST
+    value: NEWYORK
   - trait: pivot_machine_hostname
-    value: PIVOT_HOST_NAME
+    value: NASHUA
   - trait: 7zip_password
-    value: abc123
+    value: lolol
   - trait: profile_user
-    value: PROFILE_USER
+    value: pbeesly
   - trait: profile_user_password
-    value: PROFILE_USER_PASSWORD
+    value: Fl0nk3rt0n!T0by
   - trait: profile_user_day2
-    value: PROFILE_USER_DAY_2
+    value: dschrute
   - trait: profile_user_password_day2
-    value: PROFILE_USER_DAY_2_PASSWORD
+    value: Schrut3F@rms!B33ts
   - trait: onedrive.username
     value: ONEDRIVE_USERNAME@outlook.com
   - trait: onedrive.url
