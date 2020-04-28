@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   caldera-evals:
-    image: cyb3rward0g/docker-caldera:evals-042220
+    image: cyb3rward0g/docker-caldera:evals-042720
     container_name: caldera-evals
     volumes:
       - ./conf/4fb34bde-b06d-445a-a146-8e35f79ce546.yml:/usr/src/app/plugins/evals/data/sources/4fb34bde-b06d-445a-a146-8e35f79ce546.yml
@@ -11,9 +11,3 @@ services:
       - "7010:7010/tcp"
       - "7011:7011/udp"
       - "7012:7012"
-    networks:
-      caldera:
-
-networks:
-  caldera:
-    driver: bridge
