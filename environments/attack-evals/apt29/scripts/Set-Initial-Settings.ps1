@@ -43,11 +43,7 @@ if ($ServerAddresses)
 # ******************************************************
 
 # *** WinRM is enabled for all Windows hosts ***
-Write-host 'Enabling WinRM..'
-winrm quickconfig -q
-
-write-Host "Setting WinRM to start automatically.."
-& sc.exe config WinRM start= auto
+# Already Enabled
 
 # *** Powershell execution policy is set to "Bypass" ***
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
@@ -65,7 +61,7 @@ Write-Host "Enable File and Printer Sharing"
 & netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
 
 # Created an SMB share
-# N/A
+# N/A - Old Config (APT3)
 
 # Setting UAC level to Never Notify
 Write-Host "Setting UAC level to Never Notify.."
