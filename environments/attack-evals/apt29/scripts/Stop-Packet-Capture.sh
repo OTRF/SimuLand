@@ -43,6 +43,7 @@ if [ -z "$RESOURCE_GROUP" ] || [ -z "$COMPUTER_NAMES" ] || [ -z "$LOCATION" ]; t
 else
     IFS=', ' read -r -a COMPUTER_ARRAY <<< "$COMPUTER_NAMES"
     for COMPUTER in "${COMPUTER_ARRAY[@]}"; do
+        sleep 5
         echo "[+] Stopping ${COMPUTER}_PCAP session"
         az network watcher packet-capture stop --name "${COMPUTER}_PCAP" --location ${LOCATION}
         if [ ${DELETE_PCAP_SESSION} ]; then

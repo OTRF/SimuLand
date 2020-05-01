@@ -41,6 +41,7 @@ if [ -z "$RESOURCE_GROUP" ] || [ -z "$STORAGE_ACCOUNT" ] || [ -z "$COMPUTER_NAME
 else
     IFS=', ' read -r -a COMPUTER_ARRAY <<< "$COMPUTER_NAMES"
     for COMPUTER in "${COMPUTER_ARRAY[@]}"; do
+        sleep 5
         echo "[+] Starting ${COMPUTER}_PCAP session.."
         az network watcher packet-capture create --resource-group ${RESOURCE_GROUP} --vm ${COMPUTER} --name "${COMPUTER}_PCAP" --storage-account ${STORAGE_ACCOUNT} --filters "
     [
