@@ -4,7 +4,21 @@
 
 This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
 
-Full documentation:
+Official Blog Post: 
+
+## Domain Users Information
+
+| FirstName | LastName | SamAccountName  | Department | JobTitle | Password | Identity | UserContainer | 
+|---- |--- |--- |--- |--- |--- |--- |-- |
+| Norah | Martha | nmartha | Human Resources | HR Director | S@l@m3!123 | Users | DomainUsers | 
+| Pedro | Gustavo | pgustavo | IT Support | CIO | W1n1!2019 | Domain Admins | DomainUsers |
+| Lucho | Rodriguez | lrodriguez | Accounting | VP | T0d@y!2019 | Users | DomainUsers |
+| Stevie | Beavers | sbeavers | Sales | Agent | B1gM@c!2020 | Users | DomainUsers |
+| Pam | Beesly | pbeesly | Reception | Receptionist | Fl0nk3rt0n!T0by | Users | DomainUsers |
+| Dwight | Schrute | dschrute | Sales | Assistant | Schrut3F@rms!B33ts | Users | DomainUsers |
+| Michael | Scott | mscott | Management | BestBoss | abc123!D@t3M1k3 | Domain Admins | DomainUsers | 
+| Sysmon | MS | sysmonsvc | IT Support | Service Account | Buggy!1122 | Users | DomainUsers |
+
 
 ## Point-To-Site VPN Certificates Setup
 
