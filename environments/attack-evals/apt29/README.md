@@ -4,7 +4,9 @@
 
 This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
 
-Official Blog Post: 
+## Official Blog Post: 
+
+https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
 
 ## Domain Users Information
 
@@ -63,7 +65,7 @@ Use the following commands to create the environment
 Day 1
 
 ```
-az group deployment create --name <Deployment Name> --resource-group <Resource Group Name> --template-file azuredeploy.json --parameters adminUsername=<USERNAME> adminPassword='<PASSWORD>' pickScenario="Day1" setDataPipeline=WEF-LOGSTASH-EVENTHUB clientRootCertName=<Root CA Certificate Name> clientRootCertData="<Root CA Cert Data>"
+az group deployment create --name <Deployment Name> --resource-group <Resource Group Name> --template-file azuredeploy.json --parameters adminUsername=<USERNAME> adminPassword='<PASSWORD>' pickScenario="Day1" clientRootCertName=<Root CA Certificate Name> clientRootCertData="<Root CA Cert Data>"
 ```
 
 ## Connect to Azure Network environment (P2S VPN)
