@@ -73,17 +73,14 @@
         },
         "windowsDesktopSKU": {
             "type": "string",
-            "defaultValue": "19h1-pro",
+            "defaultValue": "19h2-pro",
             "metadata": {
                 "description": "The Windows virtual machine release distribution. (e.g. Version 1903 -> 19h1)"
             }
         },
         "windowsDesktopVersion": {
             "type": "string",
-            "defaultValue": "18362.720.2003120536",
-            "allowedValues": [
-                "18362.720.2003120536"
-            ]
+            "defaultValue": "latest"
         },
         "windowsDesktopVmSize": {
             "type": "string",
@@ -201,24 +198,24 @@
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
         "virtualNetworkNameA": "vnet-mordor",
-        "virtualNetworkAddressRangeA": "192.168.0.0/16",
+        "virtualNetworkAddressRangeA": "172.18.0.0/16",
         "subnetName1": "snet-corporate",
-        "subnetRange1": "192.168.1.0/24",
+        "subnetRange1": "172.18.38.0/24",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName1'))]",
         "subnetName2": "snet-branches",
-        "subnetRange2": "192.168.2.0/24",
+        "subnetRange2": "172.18.39.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
-        "subnetRange3": "192.168.3.0/24",
+        "subnetRange3": "172.18.40.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         
         "virtualNetworkGateway": "vnetgw-mordor",
-        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
+        "vpnClientAddressPoolPrefix": "192.168.5.0/24",
         
         "virtualNetworkNameB": "vnet-attacker",
-        "virtualNetworkAddressRangeB": "10.0.0.0/16",
+        "virtualNetworkAddressRangeB": "10.10.0.0/16",
         "subnetName4": "snet-attacker",
-        "subnetRange4": "10.0.1.0/24",
+        "subnetRange4": "10.10.10.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
         "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
@@ -274,10 +271,10 @@
                 "count": "[parameters('numberOfWorkstations')]",
                 "input": {
                     "tag": "workstation",
-                    "vmName": "[concat('WORKSTATION',copyIndex('workstations',1))]",
+                    "vmName": "[concat('WORKSTATION',copyIndex('endpointsDynamic',5))]",
                     "os": "windows",
                     "subnetref": "[variables('subnetRef2')]",
-                    "ipAddress": "[concat('192.168.2.',copyIndex('workstations',1))]",
+                    "ipAddress": "[concat('192.168.2.',copyIndex('endpointsDynamic',5))]",
                     "vmSize": "[parameters('windowsDesktopVmSize')]",
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
