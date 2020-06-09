@@ -77,10 +77,7 @@
         },
         "windowsDesktopVersion": {
             "type": "string",
-            "defaultValue": "18362.720.2003120536",
-            "allowedValues": [
-                "18362.720.2003120536"
-            ]
+            "defaultValue": "latest"
         },
         "windowsDesktopVmSize": {
             "type": "string",
