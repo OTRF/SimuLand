@@ -3,6 +3,10 @@
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json)
 
 
+# Design
+
+![](../../resources/images/mordor-windows-design.png)
+
 ## Domain Users Information
 
 | FirstName | LastName | SamAccountName  | Department | JobTitle | Password | Identity | UserContainer | 

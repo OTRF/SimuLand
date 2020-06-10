@@ -2,11 +2,11 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fattack-evals%2Fapt29%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fattack-evals%2Fapt29%2Fazuredeploy.json)
 
+# Design
+
+![](../../../resources/images/mordor-apt29-design.png)
+
 This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
-
-## Official Blog Post: 
-
-https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
 
 ## Domain Users Information
 
@@ -21,6 +21,10 @@ https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt2
 | Michael | Scott | mscott | Management | BestBoss | abc123!D@t3M1k3 | Domain Admins | DomainUsers | 
 | Sysmon | MS | sysmonsvc | IT Support | Service Account | Buggy!1122 | Users | DomainUsers |
 
+
+## Official Blog Post: 
+
+https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
 
 ## Point-To-Site VPN Certificates Setup
 
