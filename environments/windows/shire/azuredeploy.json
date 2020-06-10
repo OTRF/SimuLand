@@ -221,7 +221,7 @@
         "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
 
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
-        "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.ps1')]",
+        "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
         "prepareBoxScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
         "enablePowerShellLoggingScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
