@@ -197,12 +197,12 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
-        "virtualNetworkNameA": "vnet-mordor",
+        "virtualNetworkNameA": "vnet-office",
         "virtualNetworkAddressRangeA": "172.18.0.0/16",
-        "subnetName1": "snet-corporate",
+        "subnetName1": "snet-servers",
         "subnetRange1": "172.18.38.0/24",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName1'))]",
-        "subnetName2": "snet-branches",
+        "subnetName2": "snet-workstations",
         "subnetRange2": "172.18.39.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
