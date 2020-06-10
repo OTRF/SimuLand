@@ -10,7 +10,7 @@ https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt2
 
 ## Network Design
 
-![](../../../docs/source/_static/mordor-apt29-design.png)
+![](../../_static/mordor-apt29-design.png)
 
 ## Domain Users Information
 

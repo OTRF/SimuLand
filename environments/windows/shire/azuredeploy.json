@@ -9,14 +9,13 @@
             },
             "defaultValue": "[utcNow()]"
         },
-        "pickScenario": {
-            "type": "string",
-            "allowedValues": [
-                "Day1",
-                "Day2"
-            ],
+        "numberOfWorkstations": {
+            "type": "int",
+            "defaultValue": 2,
+            "minValue": 1,
+            "maxValue": 100,
             "metadata": {
-                "description": "The Evaluations emulation is split into two distinct scenarios (Days 1 and 2) to reflect these differing operational flows and toolkits used by APT29."
+                "description": "Number of VMs to deploy"
             }
         },
         "setDataPipeline": {
@@ -31,11 +30,15 @@
                 "description": "The specific data pipeline that you would like to use to aggregate and analyze security events"
             }
         },
-        "useCalderaDIY": {
-            "type": "bool",
-            "defaultValue": false,
+        "c2Framework": {
+            "type": "string",
+            "defaultValue": "covenant",
+            "allowedValues": [
+                "empire",
+                "covenant"
+            ],
             "metadata": {
-                "description": "Do you want to use the Caldear DIY Plugin? Reference: https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/CALDERA_DIY/evals"
+                "description": "C2 framework to deploy"
             }
         },
         "adminUsername": {
@@ -70,7 +73,7 @@
         },
         "windowsDesktopSKU": {
             "type": "string",
-            "defaultValue": "19h1-pro",
+            "defaultValue": "19h2-pro",
             "metadata": {
                 "description": "The Windows virtual machine release distribution. (e.g. Version 1903 -> 19h1)"
             }
@@ -159,7 +162,7 @@
         },
         "domainFQDN": {
             "type": "string",
-            "defaultValue": "dmevals.local",
+            "defaultValue": "mordor.local",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             }
@@ -194,30 +197,30 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
-        "virtualNetworkNameA": "vnet-dmevals",
-        "virtualNetworkAddressRangeA": "10.0.0.0/16",
-        "subnetName1": "snet-corporate-warehouse",
-        "subnetRange1": "10.0.0.0/24",
+        "virtualNetworkNameA": "vnet-office",
+        "virtualNetworkAddressRangeA": "172.18.0.0/16",
+        "subnetName1": "snet-servers",
+        "subnetRange1": "172.18.38.0/24",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName1'))]",
-        "subnetName2": "snet-branches",
-        "subnetRange2": "10.0.1.0/24",
+        "subnetName2": "snet-workstations",
+        "subnetRange2": "172.18.39.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
         "subnetName3": "GatewaySubnet",
-        "subnetRange3": "10.0.2.0/24",
+        "subnetRange3": "172.18.40.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         
-        "virtualNetworkGateway": "vnetgw-apt29",
-        "vpnClientAddressPoolPrefix": "172.18.39.0/24",
+        "virtualNetworkGateway": "vnetgw-mordor",
+        "vpnClientAddressPoolPrefix": "192.168.5.0/24",
         
         "virtualNetworkNameB": "vnet-attacker",
-        "virtualNetworkAddressRangeB": "192.168.0.0/16",
+        "virtualNetworkAddressRangeB": "10.10.0.0/16",
         "subnetName4": "snet-attacker",
-        "subnetRange4": "192.168.0.0/24",
+        "subnetRange4": "10.10.10.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
         "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
 
-        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.ps1')]",
         "prepareBoxScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
@@ -227,19 +230,21 @@
         "setSACLScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
         
-        "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
+        "logstashSetupScript": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/scripts/Set-Logstash.sh', parameters('_artifactsLocationSasToken')))]",
         "installLogShipperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
 
         "nxlogConfig": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
         "wefSubscriptionsUrl": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
 
+         "c2SetupScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-C2s.sh')]",
+
         "endpointsDefault": [
             {
                 "tag": "domainController",
-                "vmName": "NEWYORK",
+                "vmName": "MORDORDC",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef1')]",
-                "ipAddress": "10.0.0.4",
+                "ipAddress": "172.18.38.5",
                 "vmSize": "[parameters('windowsServerVmSize')]",
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
@@ -247,47 +252,11 @@
                 "version": "[parameters('windowsServerVersion')]"
             },
             {
-                "tag": "workstation",
-                "vmName": "SCRANTON",
-                "os": "windows",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.4",
-                "vmSize": "[parameters('windowsDesktopVmSize')]",
-                "publisher": "MicrosoftWindowsDesktop",
-                "offer": "Windows-10",
-                "sku": "[parameters('windowsDesktopSKU')]",
-                "version": "[parameters('windowsDesktopVersion')]"
-            },
-            {
-                "tag": "workstation",
-                "vmName": "UTICA",
-                "os": "windows",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.5",
-                "vmSize": "[parameters('windowsDesktopVmSize')]",
-                "publisher": "MicrosoftWindowsDesktop",
-                "offer": "Windows-10",
-                "sku": "[parameters('windowsDesktopSKU')]",
-                "version": "[parameters('windowsDesktopVersion')]"
-            },
-            {
-                "tag": "workstation",
-                "vmName": "NASHUA",
-                "os": "windows",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.6",
-                "vmSize": "[parameters('windowsDesktopVmSize')]",
-                "publisher": "MicrosoftWindowsDesktop",
-                "offer": "Windows-10",
-                "sku": "[parameters('windowsDesktopSKU')]",
-                "version": "[parameters('windowsDesktopVersion')]"
-            },
-            {
                 "tag": "c2",
                 "vmName": "TEAMSERVER",
                 "os": "linux",
                 "subnetref": "[variables('subnetRef4')]",
-                "ipAddress": "192.168.0.4",
+                "ipAddress": "10.10.10.5",
                 "vmSize": "[parameters('linuxVmSize')]",
                 "publisher": "Canonical",
                 "offer": "UbuntuServer",
@@ -295,18 +264,23 @@
                 "version": "latest"
             }
         ],
-        "endpointRedirector": [
+
+        "copy": [
             {
-                "tag": "redirector",
-                "vmName": "REDIRECTOR",
-                "os": "linux",
-                "subnetref": "[variables('subnetRef4')]",
-                "ipAddress": "192.168.0.5",
-                "vmSize": "[parameters('linuxVmSize')]",
-                "publisher": "Canonical",
-                "offer": "UbuntuServer",
-                "sku": "[parameters('ubuntuSKU')]",
-                "version": "latest"
+                "name": "endpointsDynamic",
+                "count": "[parameters('numberOfWorkstations')]",
+                "input": {
+                    "tag": "workstation",
+                    "vmName": "[concat('WORKSTATION',copyIndex('endpointsDynamic',5))]",
+                    "os": "windows",
+                    "subnetref": "[variables('subnetRef2')]",
+                    "ipAddress": "[concat('172.18.39.',copyIndex('endpointsDynamic',5))]",
+                    "vmSize": "[parameters('windowsDesktopVmSize')]",
+                    "publisher": "MicrosoftWindowsDesktop",
+                    "offer": "Windows-10",
+                    "sku": "[parameters('windowsDesktopSKU')]",
+                    "version": "[parameters('windowsDesktopVersion')]"
+                } 
             }
         ],
 
@@ -315,8 +289,8 @@
                 "tag": "logCollector",
                 "vmName": "WEC",
                 "os": "windows",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.10",
+                "subnetref": "[variables('subnetRef1')]",
+                "ipAddress": "172.18.38.6",
                 "vmSize": "[parameters('windowsDesktopVmSize')]",
                 "publisher": "MicrosoftWindowsDesktop",
                 "offer": "Windows-10",
@@ -327,8 +301,8 @@
                 "tag": "logShipper",
                 "vmName": "LOGSTASH",
                 "os": "linux",
-                "subnetref": "[variables('subnetRef2')]",
-                "ipAddress": "10.0.1.11",
+                "subnetref": "[variables('subnetRef1')]",
+                "ipAddress": "172.18.38.7",
                 "vmSize": "[parameters('linuxVmSize')]",
                 "publisher": "Canonical",
                 "offer": "UbuntuServer",
@@ -337,10 +311,10 @@
             }
         ],
 
-        "endpointsScenario": "[if(and(equals(parameters('pickScenario'), 'Day1'), not(parameters('useCalderaDIY'))), concat(variables('endpointsDefault'), variables('endpointRedirector')), variables('endpointsDefault'))]",
-        "endpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsScenario'), variables('endpointsLogging')),variables('endpointsScenario'))]",
+        "endpointsCore": "[concat(variables('endpointsDefault'), variables('endpointsDynamic'))]",
+        "endpointsAll": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsCore'), variables('endpointsLogging')),variables('endpointsCore'))]",
 
-        "patientZero": "[if(equals(parameters('pickScenario'), 'Day1'), variables('endpoints')[1].vmName, variables('endpoints')[2].vmName)]",
+        "patientZero": "[variables('endpointsDynamic')[0].vmName]",
 
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -382,7 +356,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "APT29"
+                        "value": "MORDOR"
                     },
                     "eventHubSku": {
                         "value": "Standard"
@@ -403,7 +377,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "APT29"
+                        "value": "MORDOR"
                     },
                     "enableDataConnectorsKind": {
                         "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
@@ -491,7 +465,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[concat('apt29', '-', uniquestring(resourceGroup().id, parameters('utcValue')))]"
+                    "domainNameLabel": "[concat('mordor', '-', uniquestring(resourceGroup().id, parameters('utcValue')))]"
                 }
             }
         },
@@ -525,7 +499,7 @@
                 },
                 "gatewayType": "Vpn",
                 "vpnType": "RouteBased",
-                "enableBgp": "false",
+                "enableBgp": false,
                 "vpnClientConfiguration": {
                     "vpnClientAddressPool": {
                         "addressPrefixes": [
@@ -547,7 +521,7 @@
             }
         },
         {
-            "name": "[concat('nic-', variables('endpoints')[copyIndex()].vmName)]",
+            "name": "[concat('nic-', variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
             "location": "[parameters('location')]",
@@ -557,7 +531,7 @@
             ],
             "copy": {
                 "name": "vmNetworkInterfaceCopy",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "ipConfigurations": [
@@ -565,9 +539,9 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('endpoints')[copyIndex()].ipAddress]",
+                            "privateIPAddress": "[variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "subnet": {
-                                "id": "[variables('endpoints')[copyIndex()].subnetref]"
+                                "id": "[variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
                             }
                         }
                     }
@@ -575,7 +549,7 @@
             }
         },
         {
-            "name": "vnet-dmevals/peering-to-remote-vnet-attacker",
+            "name": "vnet-mordor/peering-to-remote-vnet-attacker",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -596,7 +570,7 @@
             }
         },
         {
-            "name": "vnet-attacker/peering-to-remote-vnet-dmevals",
+            "name": "vnet-attacker/peering-to-remote-vnet-mordor",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -617,34 +591,34 @@
             }
         },
         {
-            "name": "[variables('endpoints')[copyIndex()].vmName]",
+            "name": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmName]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('endpoints')[copyIndex()].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName))]"
             ],
             "copy": {
                 "name": "vmVMCopy",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('endpoints')[copyIndex()].vmSize]"
+                    "vmSize": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('endpoints')[copyIndex()].vmName]",
+                    "computerName": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
-                    "linuxConfiguration": "[if(equals(variables('endpoints')[copyIndex()].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
+                    "linuxConfiguration": "[if(equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('endpoints')[copyIndex()].publisher]",
-                        "offer": "[variables('endpoints')[copyIndex()].offer]",
-                        "sku": "[variables('endpoints')[copyIndex()].sku]",
-                        "version": "[variables('endpoints')[copyIndex()].version]"
+                        "publisher": "[variables('endpointsAll')[copyIndex('vmVMCopy')].publisher]",
+                        "offer": "[variables('endpointsAll')[copyIndex('vmVMCopy')].offer]",
+                        "sku": "[variables('endpointsAll')[copyIndex('vmVMCopy')].sku]",
+                        "version": "[variables('endpointsAll')[copyIndex('vmVMCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -660,7 +634,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('endpoints')[copyIndex()].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName))]"
                         }
                     ]
                 },
@@ -673,13 +647,13 @@
             },
             "resources": [
                 {
-                    "condition": "[equals(variables('endpoints')[copyIndex()].os, 'windows')]",
+                    "condition": "[equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'windows')]",
                     "name": "AntiMalware",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Security",
@@ -705,13 +679,13 @@
                     }
                 },
                 {
-                    "condition": "[equals(variables('endpoints')[copyIndex()].os, 'windows')]",
+                    "condition": "[equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'windows')]",
                     "name": "Microsoft.Azure.NetworkWatcher",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.NetworkWatcher",
@@ -723,17 +697,17 @@
             ]
         },
         {
-            "condition": "[equals(variables('endpoints')[copyIndex()].tag, 'workstation')]",
-            "name": "[concat(variables('endpoints')[copyIndex()].vmName, '/SetUpWKS')]",
+            "condition": "[equals(variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].tag, 'workstation')]",
+            "name": "[concat(variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].vmName, '/SetUpWKS')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
             ],
             "copy": {
                 "name": "InitialSetUpWKSCopy",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -742,7 +716,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -751,88 +725,18 @@
                         "[variables('setSACLScript')]",
                         "[variables('setIPAddressScript')]"
                     ],
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('endpoints')[0].ipAddress)]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('endpointsAll')[0].ipAddress)]"
                 },
                 "protectedSettings": {}
             }
         },
         {
-            "name": "SetPatientZero",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('patientZero'), 'joindomain')]",
-                "vmSetUpWEF"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetUpWKS"
-                    },
-                    "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Victim.ps1', ' ', '-scenario', ' ', parameters('pickScenario'), ' ', if(parameters('useCalderaDIY'), concat('-domainName', ' ', variables('domainNameArray')[0], ' ', '-useCalderaDIY'), concat('-domainName', ' ', variables('domainNameArray')[0])))]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Victim.ps1')]",
-                            "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/', if(parameters('useCalderaDIY'), 'scripts/Invoke-Sandcat.ps1', concat('payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/victim.zip'))))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[variables('patientZero')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('pickScenario'), 'Day1')]",
-            "name": "SetSecondVictim",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[3].vmName, 'joindomain')]",
-                "vmSetUpWEF"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetUpWKS"
-                    },
-                    "commandToExecute": {
-                        "value": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"Add-LocalGroupMember -Group Administrators -Member', ' ', variables('domainNameArray')[0],'\\pbeesly\"')]"
-                    },
-                    "fileUris": {
-                        "value": []
-                    },
-                    "vmName": {
-                        "value": "[variables('endpoints')[3].vmName]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "name": "[concat(variables('endpoints')[0].vmName, '/SetUpDC')]",
+            "name": "[concat(variables('endpointsAll')[0].vmName, '/SetUpDC')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpoints')[0].vmName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[0].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -841,7 +745,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -870,22 +774,22 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-WEC.ps1",
+                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-WEC.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setIPAddressScript')]"
                     ],
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('endpoints')[0].ipAddress)]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('endpointsAll')[0].ipAddress)]"
                 },
                 "protectedSettings": {}
             }
         },
         {
-            "name": "[concat(variables('endpoints')[4].vmName, '/SetUpC2')]",
+            "name": "[concat(variables('endpointsAll')[1].vmName, '/SetUpC2')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpoints')[4].vmName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[1].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -894,34 +798,10 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[if(parameters('useCalderaDIY'),  concat('bash Set-Adversary.sh -s', ' ', parameters('pickScenario'), ' ', '-p'), concat('bash Set-Adversary.sh -s', ' ', parameters('pickScenario')))]",
+                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'))]",
                     "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), 'environments/attack-evals/apt29/scripts/Set-Adversary.sh')]",
-                        "[variables('dockerInstallScript')]",
-                        "[uri(parameters('_artifactsLocation'), if(parameters('useCalderaDIY'), 'environments/attack-evals/apt29/caldera/conf/4fb34bde-b06d-445a-a146-8e35f79ce546.yml', concat('environments/attack-evals/apt29/payloads/', if(equals(parameters('pickScenario'), 'Day1'), 'day1', 'day2'), '/attack-platform.zip')))]"
-                    ]
-                }
-            }
-        },
-        {
-            "condition": "[and(equals(parameters('pickScenario'), 'Day1'), not(parameters('useCalderaDIY')))]",
-            "name": "[concat(variables('endpointRedirector')[0].vmName, '/SetUpRedirector')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "InitialSetUpWKSCopy"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {},
-                "protectedSettings": {
-                    "commandToExecute": "[concat('bash Set-Socat.sh -i', ' ', variables('endpoints')[4].ipAddress)]",
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Socat.sh"
+                        "[variables('c2SetupScript')]",
+                        "[variables('dockerInstallScript')]"
                     ]
                 }
             }
@@ -952,13 +832,13 @@
             }
         },
         {
-            "name": "[concat(variables('endpoints')[0].vmName, '/CreateADForest')]",
+            "name": "[concat(variables('endpointsAll')[0].vmName, '/CreateADForest')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'AntiMalware')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'SetUpDC')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'AntiMalware')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'SetUpDC')]"
             ],
             "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -988,13 +868,13 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'CreateADForest')]",
                 "[concat('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -1024,7 +904,7 @@
                     },
                     "DNSServerAddress": {
                         "value": [
-                            "[variables('endpoints')[0].ipAddress]"
+                            "[variables('endpointsAll')[0].ipAddress]"
                         ]
                     },
                     "location": {
@@ -1051,18 +931,18 @@
                         "value": "SetUpDC"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('endpoints')[0].vmName)]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('endpointsAll')[0].vmName)]"
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-AD.ps1",
+                            "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-AD.ps1",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpoints')[0].vmName]"
+                        "value": "[variables('endpointsAll')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -1071,8 +951,8 @@
             }
         },
         {
-            "condition": "[or(equals(variables('endpoints')[copyIndex()].tag, 'workstation'), equals(variables('endpoints')[copyIndex()].tag, 'logCollector'))]",
-            "name": "[concat(variables('endpoints')[copyIndex()].vmName,'/joindomain')]",
+            "condition": "[or(equals(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].tag, 'workstation'), equals(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].tag, 'logCollector'))]",
+            "name": "[concat(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
@@ -1083,7 +963,7 @@
             ],
             "copy": {
                 "name": "vmDomainJoinCopy",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -1174,8 +1054,8 @@
             }
         },
         {
-            "condition": "[and(contains(parameters('setDataPipeline'), 'WEF'),or(equals(variables('endpoints')[copyIndex()].tag, 'workstation'), equals(variables('endpoints')[copyIndex()].tag, 'domainController')))]",
-            "name": "[concat(variables('endpoints')[copyIndex()].vmName, '-SetUpWEF')]",
+            "condition": "[and(contains(parameters('setDataPipeline'), 'WEF'),or(equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'workstation'), equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'domainController')))]",
+            "name": "[concat(variables('endpointsAll')[copyIndex('vmSetUpWEF')].vmName, '-SetUpWEF')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -1183,7 +1063,7 @@
             ],
             "copy": {
                 "name": "vmSetUpWEF",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "mode": "Incremental",
@@ -1193,7 +1073,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "[if(equals(variables('endpoints')[copyIndex()].tag, 'workstation'), 'SetUpWks', 'SetUpDC')]"
+                        "value": "[if(equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'workstation'), 'SetUpWks', 'SetUpDC')]"
                     },
                     "commandToExecute": {
                         "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEF-Client.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'), ' ', '-WECNetBIOSName', ' ', variables('endpointsLogging')[0].vmName)]"
@@ -1204,7 +1084,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpoints')[copyIndex()].vmName]"
+                        "value": "[variables('endpointsAll')[copyIndex('vmSetUpWEF')].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -1213,17 +1093,17 @@
             }
         },
         {
-            "condition": "[and(equals(parameters('setDataPipeline'), 'AZURESENTINEL'), equals(variables('endpoints')[copyIndex()].os, 'windows'))]",
-            "name": "[concat(variables('endpoints')[copyIndex()].vmName,'/LogAnalytics.Agent')]",
+            "condition": "[and(equals(parameters('setDataPipeline'), 'AZURESENTINEL'), equals(variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].os, 'windows'))]",
+            "name": "[concat(variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].vmName,'/LogAnalytics.Agent')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[copyIndex()].vmName, 'joindomain')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].vmName, 'joindomain')]"
             ],
             "copy": {
                 "name": "LogAnalyticsAgentCopy",
-                "count": "[length(variables('endpoints'))]"
+                "count": "[length(variables('endpointsAll'))]"
             },
             "properties": {
                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -1250,7 +1130,7 @@
         },
         "endpointsDeployed": {
             "type": "array",
-            "value": "[variables('endpoints')]"
+            "value": "[variables('endpointsAll')]"
         }
     }
 }

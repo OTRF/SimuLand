@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>APT29 Evaluations &mdash; Mordor Labs 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Windows Environments" href="../windows.html" />
+    <link rel="prev" title="ATT&amp;CK Evaluations" href="../attack_evals.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Mordor Labs
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Environments:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../attack_evals.html">ATT&amp;CK Evals</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">APT29</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#blog-post">Blog Post</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-design">Network Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#domain-users-information">Domain Users Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-sources-collected">Data Sources Collected</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment">Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#point-to-site-vpn-certificates-setup">Point-To-Site VPN Certificates Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-environment">Deploy Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#connect-to-environment-p2s-vpn">Connect to Environment (P2S VPN)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collect-security-event-logs">Collect Security Event Logs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#install-kafkacat">Install Kafkacat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kafkacat-conf-file-setup">Kafkacat Conf File Setup</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#collect-pcap-east-west">Collect PCAP (East-West)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#start-packet-capture">Start Packet Capture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stop-packet-capture">Stop Packet Capture</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#emulate-adversary">Emulate Adversary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../windows.html">Windows</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Mordor Labs</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../attack_evals.html">ATT&amp;CK Evaluations</a> &raquo;</li>
+        
+      <li>APT29 Evaluations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/environments/evals/apt29.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="apt29-evaluations">
+<h1>APT29 Evaluations<a class="headerlink" href="#apt29-evaluations" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json"><img alt="Deploy to Azure" src="https://aka.ms/deploytoazurebutton" /></a> <a class="reference external" href="http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json"><img alt="Visualize" src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png" /></a></p>
+<p>This Mordor environment was built to replicate a similar setup developed by the ATT&amp;CK Evals team following their official <a class="reference external" href="https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf">emulation plan methodology</a> and using several of the <a class="reference external" href="https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan">PowerShell scripts</a> used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.</p>
+<div class="section" id="blog-post">
+<h2>Blog Post<a class="headerlink" href="#blog-post" title="Permalink to this headline">¶</a></h2>
+<p>https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a</p>
+</div>
+<div class="section" id="network-design">
+<h2>Network Design<a class="headerlink" href="#network-design" title="Permalink to this headline">¶</a></h2>
+<p><img alt="../../_images/mordor-apt29-design.png" src="../../_images/mordor-apt29-design.png" /></p>
+</div>
+<div class="section" id="domain-users-information">
+<h2>Domain Users Information<a class="headerlink" href="#domain-users-information" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th align="left">FirstName</th>
+<th align="left">LastName</th>
+<th align="left">SamAccountName</th>
+<th align="left">Department</th>
+<th align="left">JobTitle</th>
+<th align="left">Password</th>
+<th align="left">Identity</th>
+<th align="left">UserContainer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Norah</td>
+<td align="left">Martha</td>
+<td align="left">nmartha</td>
+<td align="left">Human Resources</td>
+<td align="left">HR Director</td>
+<td align="left">S@l@m3!123</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Pedro</td>
+<td align="left">Gustavo</td>
+<td align="left">pgustavo</td>
+<td align="left">IT Support</td>
+<td align="left">CIO</td>
+<td align="left">W1n1!2019</td>
+<td align="left">Domain Admins</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Lucho</td>
+<td align="left">Rodriguez</td>
+<td align="left">lrodriguez</td>
+<td align="left">Accounting</td>
+<td align="left">VP</td>
+<td align="left">T0d@y!2019</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Stevie</td>
+<td align="left">Beavers</td>
+<td align="left">sbeavers</td>
+<td align="left">Sales</td>
+<td align="left">Agent</td>
+<td align="left">B1gM@c!2020</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Pam</td>
+<td align="left">Beesly</td>
+<td align="left">pbeesly</td>
+<td align="left">Reception</td>
+<td align="left">Receptionist</td>
+<td align="left">Fl0nk3rt0n!T0by</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Dwight</td>
+<td align="left">Schrute</td>
+<td align="left">dschrute</td>
+<td align="left">Sales</td>
+<td align="left">Assistant</td>
+<td align="left">Schrut3F@rms!B33ts</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Michael</td>
+<td align="left">Scott</td>
+<td align="left">mscott</td>
+<td align="left">Management</td>
+<td align="left">BestBoss</td>
+<td align="left">abc123!D@t3M1k3</td>
+<td align="left">Domain Admins</td>
+<td align="left">DomainUsers</td>
+</tr>
+<tr>
+<td align="left">Sysmon</td>
+<td align="left">MS</td>
+<td align="left">sysmonsvc</td>
+<td align="left">IT Support</td>
+<td align="left">Service Account</td>
+<td align="left">Buggy!1122</td>
+<td align="left">Users</td>
+<td align="left">DomainUsers</td>
+</tr>
+</tbody>
+</table></div>
+<div class="section" id="data-sources-collected">
+<h2>Data Sources Collected<a class="headerlink" href="#data-sources-collected" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1">Windows Security Auditing</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/resources/configs/sysmon/sysmonv11.0.xml">Sysmon Config</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/tree/master/resources/configs/wef/subscriptions">WEF Subscriptions</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/resources/scripts/powershell/auditing/Set-SACLs.ps1">SACL Audit Rules</a></p></li>
+</ul>
+</div>
+<div class="section" id="deployment">
+<h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="point-to-site-vpn-certificates-setup">
+<h3>Point-To-Site VPN Certificates Setup<a class="headerlink" href="#point-to-site-vpn-certificates-setup" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/azure_p2s_vpn_setup.html#create-a-root-ca-certificate">Create root CA certificate</a></p></li>
+<li><p>Get the name of it (CN= Root CA Name)</p></li>
+<li><p>Get the root CA cert data by running the following commands and save it to pass it as a parameter while creating the environment.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openssl</span> <span class="n">x509</span> <span class="o">-</span><span class="ow">in</span> <span class="n">caCert</span><span class="o">.</span><span class="n">pem</span> <span class="o">-</span><span class="n">outform</span> <span class="n">der</span> <span class="o">|</span> <span class="n">base64</span> <span class="o">|</span> <span class="n">pbcopy</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/azure_p2s_vpn_setup.html#create-a-client-certificate-signed-with-the-ca-s-root-key">Create a client Certificate signed with the CA’s root key</a></p></li>
+</ul>
+</div>
+<div class="section" id="deploy-environment">
+<h3>Deploy Environment<a class="headerlink" href="#deploy-environment" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Clone the project and change your directory to windows one</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">OTRF</span><span class="o">/</span><span class="n">mordor</span><span class="o">-</span><span class="n">labs</span>
+<span class="n">cd</span> <span class="n">mordor</span><span class="o">-</span><span class="n">labs</span><span class="o">/</span><span class="n">tree</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">environments</span><span class="o">/</span><span class="n">attack</span><span class="o">-</span><span class="n">evals</span><span class="o">/</span><span class="n">apt29</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/azure_cli_setup.html">Install and set up Azure CLI</a></p></li>
+<li><p>Create an Azure Resource group</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">az</span> <span class="n">group</span> <span class="n">create</span> <span class="o">--</span><span class="n">location</span> <span class="n">eastus</span> <span class="o">--</span><span class="n">resource</span><span class="o">-</span><span class="n">group</span> <span class="n">MyResourceGroup</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Use the following commands to create the environment</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">az</span> <span class="n">group</span> <span class="n">deployment</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="o">&lt;</span><span class="n">Deployment</span> <span class="n">Name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">resource</span><span class="o">-</span><span class="n">group</span> <span class="o">&lt;</span><span class="n">Resource</span> <span class="n">Group</span> <span class="n">Name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="n">file</span> <span class="n">azuredeploy</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">parameters</span> <span class="n">adminUsername</span><span class="o">=&lt;</span><span class="n">USERNAME</span><span class="o">&gt;</span> <span class="n">adminPassword</span><span class="o">=</span><span class="s1">&#39;&lt;PASSWORD&gt;&#39;</span> <span class="n">clientRootCertName</span><span class="o">=&lt;</span><span class="n">Root</span> <span class="n">CA</span> <span class="n">Certificate</span> <span class="n">Name</span><span class="o">&gt;</span> <span class="n">clientRootCertData</span><span class="o">=</span><span class="s2">&quot;&lt;Root CA Cert Data&gt;&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="connect-to-environment-p2s-vpn">
+<h2>Connect to Environment (P2S VPN)<a class="headerlink" href="#connect-to-environment-p2s-vpn" title="Permalink to this headline">¶</a></h2>
+<p>VMs deployed in Azure will not be accessible via their Public IP addresses. A Point-To-Site (P2S) VPN is set up and you will need to use a client certificate signed with the CA’s root private key created earlier.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients">Set up OpenVPN Client</a></p>
+<ul>
+<li><p>Use the Client’s Certificate (PEM format)</p></li>
+<li><p>Use the Client’s Private Key (PEM format)</p></li>
+</ul>
+</li>
+<li><p>RDP or SSH to the Windows and Linux endpoints in the environment.</p></li>
+</ul>
+</div>
+<div class="section" id="collect-security-event-logs">
+<h2>Collect Security Event Logs<a class="headerlink" href="#collect-security-event-logs" title="Permalink to this headline">¶</a></h2>
+<p>This environment comes with a data pipeline option to collect security event logs from Windows Endpoints via Windows Event Forwarding (WEF) configurations, send them to a Logstash pipeline which sends them over to an Azure Event Hub. From there, one could use tools such as Kafkacat to connect to the Azure Event hub, consume events being sent over and write them to a local JSON file in real-time.</p>
+<div class="section" id="install-kafkacat">
+<h3>Install Kafkacat<a class="headerlink" href="#install-kafkacat" title="Permalink to this headline">¶</a></h3>
+<p>On recent enough Debian systems:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">kafkacat</span>
+</pre></div>
+</div>
+<p>And on Mac OS X with homebrew installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">kafkacat</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="kafkacat-conf-file-setup">
+<h3>Kafkacat Conf File Setup<a class="headerlink" href="#kafkacat-conf-file-setup" title="Permalink to this headline">¶</a></h3>
+<p>Make sure you update the <a class="reference external" href="https://github.com/OTRF/mordor-labs/blob/master/environments/windows/kafkacat/kafkacat.conf"><strong>Kafkacat.conf</strong></a> with the values from your environment.</p>
+<p><strong>Run Kafkacat and Consume Events</strong></p>
+<p>Once you create the environment, you can run the following command to start consuming events from the Azure Event Hub and write them to a local JSON file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>kafkacat -b &lt;eventhub-namespace&gt;.servicebus.windows.net:9093 -t &lt;eventhunb-name&gt; -F kafkacat.conf -C -o end &gt; mordor_$(date +%F%H%M%S).json
+</pre></div>
+</div>
+<p>I would run that command right before emulating adversary techniques.</p>
+</div>
+</div>
+<div class="section" id="collect-pcap-east-west">
+<h2>Collect PCAP (East-West)<a class="headerlink" href="#collect-pcap-east-west" title="Permalink to this headline">¶</a></h2>
+<p>This environment is set up to start a <a class="reference external" href="https://docs.microsoft.com/en-us/azure/network-watcher/network-watcher-packet-capture-overview">packet capture</a> via the <a class="reference external" href="https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/network-watcher-windows">Azure Network Watcher extension</a> installed on every Windows VM. Every PCAP is sent to an Azure storage account defined at the moment you start the pcap session. I would do it once you are ready to start the execution of the emulation plan.</p>
+<div class="section" id="start-packet-capture">
+<h3>Start Packet Capture<a class="headerlink" href="#start-packet-capture" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bash</span> <span class="n">Start</span><span class="o">-</span><span class="n">Packet</span><span class="o">-</span><span class="n">Capture</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">r</span> <span class="o">&lt;</span><span class="n">Resource</span> <span class="n">Group</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">s</span> <span class="o">&lt;</span><span class="n">Storage</span> <span class="n">Account</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">c</span> <span class="n">WORKSTATION1</span><span class="p">,</span><span class="n">WORKSTATION2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stop-packet-capture">
+<h3>Stop Packet Capture<a class="headerlink" href="#stop-packet-capture" title="Permalink to this headline">¶</a></h3>
+<p>You can stop the packet capture sessions by running the following command. This does not delete the packet capture session. You will have to delete it if you want to start it again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bash</span> <span class="n">Stop</span><span class="o">-</span><span class="n">Packet</span><span class="o">-</span><span class="n">Capture</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">r</span> <span class="o">&lt;</span><span class="n">Resource</span> <span class="n">Group</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">c</span> <span class="n">WORKSTATION1</span><span class="p">,</span><span class="n">WORKSTATION2</span> <span class="o">-</span><span class="n">l</span> <span class="n">eastus</span>
+</pre></div>
+</div>
+<p>You can stop and delete the packet captures with the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bash</span> <span class="n">Stop</span><span class="o">-</span><span class="n">Packet</span><span class="o">-</span><span class="n">Capture</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">r</span> <span class="o">&lt;</span><span class="n">Resource</span> <span class="n">Group</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">c</span> <span class="n">WORKSTATION1</span><span class="p">,</span><span class="n">WORKSTATION2</span> <span class="o">-</span><span class="n">l</span> <span class="n">eastus</span> <span class="o">-</span><span class="n">d</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="emulate-adversary">
+<h2>Emulate Adversary<a class="headerlink" href="#emulate-adversary" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://1drv.ms/x/s%21Al3n8YlNIUPUbx1TH8bkLU5UWk0?e=LeA51U">APT29 Emulation Plan</a></p></li>
+<li><p><a class="reference external" href="https://youtu.be/fJAuBrzYTzI">Scenario 1 - Video</a></p></li>
+<li><p><a class="reference external" href="https://youtu.be/PzYKvfwoHEY">Scenario 2 - Video</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../windows.html" class="btn btn-neutral float-right" title="Windows Environments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../attack_evals.html" class="btn btn-neutral float-left" title="ATT&amp;CK Evaluations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Roberto Rodriguez @Cyb3rWard0g
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

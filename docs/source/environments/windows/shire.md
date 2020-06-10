@@ -1,16 +1,10 @@
-# APT29 Evaluations
+# Shire Environment
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fazuredeploy.json)
-
-This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
-
-## Blog Post
-
-https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json)
 
 ## Network Design
 
-![](../../../docs/source/_static/mordor-apt29-design.png)
+![](../../_static/mordor-shire-design.png)
 
 ## Domain Users Information
 
@@ -51,7 +45,7 @@ openssl x509 -in caCert.pem -outform der | base64 | pbcopy
 
 ```
 https://github.com/OTRF/mordor-labs
-cd mordor-labs/tree/master/environments/attack-evals/apt29
+cd mordor-labs/tree/master/environments/windows/shire
 ```
 
 * [Install and set up Azure CLI](https://blacksmith.readthedocs.io/en/latest/azure_cli_setup.html)
@@ -131,9 +125,3 @@ You can stop and delete the packet captures with the following command:
 ```
 bash Stop-Packet-Capture.sh -r <Resource Group name> -c WORKSTATION1,WORKSTATION2 -l eastus -d
 ```
-
-## Emulate Adversary
-
-* [APT29 Emulation Plan](https://1drv.ms/x/s!Al3n8YlNIUPUbx1TH8bkLU5UWk0?e=LeA51U)
-* [Scenario 1 - Video](https://youtu.be/fJAuBrzYTzI)
-* [Scenario 2 - Video](https://youtu.be/PzYKvfwoHEY)
