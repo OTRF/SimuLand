@@ -15,10 +15,6 @@ This content is **ONLY** to be used to create research opportunities and generat
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
-.. toctree::
-   :maxdepth: 2
    :caption: Environments:
 
    ATT&CK Evals <environments/attack_evals>
