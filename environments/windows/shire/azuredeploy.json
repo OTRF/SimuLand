@@ -549,7 +549,7 @@
             }
         },
         {
-            "name": "vnet-mordor/peering-to-remote-vnet-attacker",
+            "name": "vnet-office/peering-to-remote-vnet-attacker",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
@@ -570,7 +570,7 @@
             }
         },
         {
-            "name": "vnet-attacker/peering-to-remote-vnet-mordor",
+            "name": "vnet-attacker/peering-to-remote-vnet-office",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
