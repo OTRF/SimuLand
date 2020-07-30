@@ -626,13 +626,7 @@
                     "osDisk": {
                         "createOption": "FromImage"
                     },
-                    "dataDisks": [
-                        {
-                            "diskSizeGB": 500,
-                            "lun": 0,
-                            "createOption": "Empty"
-                        }
-                    ]
+                    "dataDisks": []
                 },
                 "networkProfile": {
                     "networkInterfaces": [
