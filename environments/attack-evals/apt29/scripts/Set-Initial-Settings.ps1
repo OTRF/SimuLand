@@ -35,6 +35,9 @@ if ($ServerAddresses)
     & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
 }
 
+# Set Wallpaper
+& .\Set-WallPaper.ps1
+
 # ******************************************************
 #             APT29 Evals Environment                  *   
 #                                                      *

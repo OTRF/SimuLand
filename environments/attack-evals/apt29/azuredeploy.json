@@ -233,6 +233,8 @@
         "nxlogConfig": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
         "wefSubscriptionsUrl": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
 
+        "setWallPaperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
+
         "endpointsDefault": [
             {
                 "tag": "domainController",
@@ -749,7 +751,8 @@
                         "[variables('installAgentScript')]",
                         "[variables('downloadSACLScript')]",
                         "[variables('setSACLScript')]",
-                        "[variables('setIPAddressScript')]"
+                        "[variables('setIPAddressScript')]",
+                        "[variables('setWallPaperScript')]"
                     ],
                     "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('endpoints')[0].ipAddress)]"
                 },
@@ -847,7 +850,8 @@
                         "[variables('enablePowerShellLoggingScript')]",
                         "[variables('installAgentScript')]",
                         "[variables('downloadSACLScript')]",
-                        "[variables('setSACLScript')]"
+                        "[variables('setSACLScript')]",
+                        "[variables('setWallPaperScript')]"
                     ],
                     "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetDC')]"
                 },
@@ -872,7 +876,8 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-WEC.ps1",
                         "[variables('prepareBoxScript')]",
-                        "[variables('setIPAddressScript')]"
+                        "[variables('setIPAddressScript')]",
+                        "[variables('setWallPaperScript')]"
                     ],
                     "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('endpoints')[0].ipAddress)]"
                 },

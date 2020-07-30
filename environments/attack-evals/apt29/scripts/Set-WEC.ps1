@@ -8,4 +8,8 @@ param (
 )
 
 & .\Prepare-Box.ps1
+
 & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
+
+# Set Wallpaper
+& .\Set-WallPaper.ps1

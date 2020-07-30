@@ -10,6 +10,7 @@ param (
     [switch]$SetDC
 )
 
+# Custom Settings applied
 & .\Prepare-Box.ps1
 
 # Windows Security Audit Categories
@@ -34,6 +35,9 @@ if ($ServerAddresses)
 {
     & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
 }
+
+# Set Wallpaper
+& .\Set-WallPaper.ps1
 
 # *** Powershell execution policy is set to "Bypass" ***
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
