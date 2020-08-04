@@ -184,7 +184,7 @@
                 "P2SVpn"
             ],
             "metadata": {
-                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+                "description": "Do you want to restrict access to your environment by a Public IP or set up a Point-To-Site VPN. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'. If the later, make sure you set 'clientRootCertName' and 'clientRootCertData'"
             }
         },
         "allowedIPAddresses": {
@@ -280,7 +280,7 @@
         "installLogShipperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Log-Shipper.ps1')]",
 
         "nxlogConfig": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
-        "wefSubscriptionsUrl": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
+        "wefSubscriptions": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
         
         "c2SetupScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-C2s.sh')]",
         
@@ -302,24 +302,7 @@
                 "nsg": "nsg-rdpallow"
             }
         ],
-
-        "c2": [
-            {
-                "tag": "c2",
-                "vmName": "TEAMSERVER",
-                "os": "linux",
-                "subnetref": "[variables('subnetRef4')]",
-                "ipAddress": "10.10.10.5",
-                "vmSize": "[parameters('linuxVmSize')]",
-                "publisher": "Canonical",
-                "offer": "UbuntuServer",
-                "sku": "[parameters('ubuntuSKU')]",
-                "version": "latest",
-                "extensionName": "SetUpC2",
-                "nsg": "nsg-sshallow"
-            }
-        ],
-
+        
         "copy": [
             {
                 "name": "endpointsDynamic",
@@ -371,6 +354,23 @@
                 "sku": "[parameters('ubuntuSKU')]",
                 "version": "latest",
                 "extensionName": "SetUpLogstash",
+                "nsg": "nsg-sshallow"
+            }
+        ],
+
+        "c2": [
+            {
+                "tag": "c2",
+                "vmName": "TEAMSERVER",
+                "os": "linux",
+                "subnetref": "[variables('subnetRef4')]",
+                "ipAddress": "10.10.10.5",
+                "vmSize": "[parameters('linuxVmSize')]",
+                "publisher": "Canonical",
+                "offer": "UbuntuServer",
+                "sku": "[parameters('ubuntuSKU')]",
+                "version": "latest",
+                "extensionName": "SetUpC2",
                 "nsg": "nsg-sshallow"
             }
         ],
@@ -1105,7 +1105,7 @@
                         "value": "[variables('windowsEventCollector')[0].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEC.ps1',' ', '-SubscriptionsUrl',' ', variables('wefSubscriptionsUrl'))]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEC.ps1',' ', '-SubscriptionsUrl',' ', variables('wefSubscriptions'))]"
                     },
                     "fileUris": {
                         "value": [
