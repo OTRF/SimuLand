@@ -267,6 +267,7 @@
         "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
 
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
         "prepareBoxScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
@@ -436,7 +437,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri('https://raw.githubusercontent.com/OTRF/','Azure-Sentinel2Go/master/azuredeploy.json')]",
+                    "uri": "[uri('https://raw.githubusercontent.com/OTRF/','Azure-Sentinel2Go/master/azure-sentinel/azuredeploy.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -714,34 +715,34 @@
             }
         },
         {
-            "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+            "name": "[variables('allEndpoints')[copyIndex('VMCopy')].vmName]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('VMCopy')].vmName))]"
             ],
             "copy": {
-                "name": "vmVMCopy",
+                "name": "VMCopy",
                 "count": "[length(variables('allEndpoints'))]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmSize]"
+                    "vmSize": "[variables('allEndpoints')[copyIndex('VMCopy')].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+                    "computerName": "[variables('allEndpoints')[copyIndex('VMCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
-                    "linuxConfiguration": "[if(equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
+                    "linuxConfiguration": "[if(equals(variables('allEndpoints')[copyIndex('VMCopy')].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('allEndpoints')[copyIndex('vmVMCopy')].publisher]",
-                        "offer": "[variables('allEndpoints')[copyIndex('vmVMCopy')].offer]",
-                        "sku": "[variables('allEndpoints')[copyIndex('vmVMCopy')].sku]",
-                        "version": "[variables('allEndpoints')[copyIndex('vmVMCopy')].version]"
+                        "publisher": "[variables('allEndpoints')[copyIndex('VMCopy')].publisher]",
+                        "offer": "[variables('allEndpoints')[copyIndex('VMCopy')].offer]",
+                        "sku": "[variables('allEndpoints')[copyIndex('VMCopy')].sku]",
+                        "version": "[variables('allEndpoints')[copyIndex('VMCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -751,7 +752,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allEndpoints')[copyIndex('VMCopy')].vmName))]"
                         }
                     ]
                 },
@@ -764,13 +765,13 @@
             },
             "resources": [
                 {
-                    "condition": "[equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'windows')]",
+                    "condition": "[equals(variables('allEndpoints')[copyIndex('VMCopy')].os, 'windows')]",
                     "name": "AntiMalware",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('VMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Security",
@@ -796,13 +797,13 @@
                     }
                 },
                 {
-                    "condition": "[equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'windows')]",
+                    "condition": "[equals(variables('allEndpoints')[copyIndex('VMCopy')].os, 'windows')]",
                     "name": "Microsoft.Azure.NetworkWatcher",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('VMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.NetworkWatcher",
@@ -814,15 +815,15 @@
             ]
         },
         {
-            "name": "[concat(variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('WKSInitialSetUpCopy')].vmName, '/', variables('endpointsDynamic')[copyIndex('WKSInitialSetUpCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('WKSInitialSetUpCopy')].vmName)]"
             ],
             "copy": {
-                "name": "InitialSetUpWKSCopy",
+                "name": "WKSInitialSetUpCopy",
                 "count": "[length(variables('endpointsDynamic'))]"
             },
             "properties": {
@@ -878,28 +879,77 @@
         },
         {
             "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
-            "name": "[concat(variables('windowsEventCollector')[0].vmName, '/', variables('windowsEventCollector')[0].extensionName)]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "name": "WECInitialSetup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('windowsEventCollector')[0].vmName)]"
+                "VMCopy"
             ],
             "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-WEC.ps1",
-                        "[variables('prepareBoxScript')]",
-                        "[variables('setIPAddressScript')]",
-                        "[variables('setWallPaperScript')]"
-                    ],
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('domainController')[0].ipAddress)]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {}
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('windowsEventCollector')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('domainController')[0].ipAddress)]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/windows/shire/scripts/Set-WEC.ps1",
+                            "[variables('prepareBoxScript')]",
+                            "[variables('setIPAddressScript')]",
+                            "[variables('setWallPaperScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('windowsEventCollector')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
+            "name": "LogstashInitialSetup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "deployEventHub",
+                "VMCopy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('logstashPipe')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[if(equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB'), concat('bash Set-Logstash.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('logstashSetupScript')]",
+                            "[variables('dockerInstallScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('logstashPipe')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         },
         {
@@ -920,31 +970,6 @@
                     "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'))]",
                     "fileUris": [
                         "[variables('c2SetupScript')]",
-                        "[variables('dockerInstallScript')]"
-                    ]
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
-            "name": "[concat(variables('logstashPipe')[0].vmName, '/', variables('logstashPipe')[0].extensionName)]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('logstashPipe')[0].vmName)]",
-                "deployEventHub"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {},
-                "protectedSettings": {
-                    "commandToExecute": "[if(equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB'), concat('bash Set-Logstash.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]",
-                    "fileUris": [
-                        "[variables('logstashSetupScript')]",
                         "[variables('dockerInstallScript')]"
                     ]
                 }
@@ -1060,8 +1085,8 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "InitialSetUpWKSCopy",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('windowsEventCollector')[0].vmName, variables('windowsEventCollector')[0].extensionName)]",
+                "WKSInitialSetUpCopy",
+                "WECInitialSetup",
                 "ADSetup",
                 "UpdateVNetDNS"
             ],
@@ -1128,7 +1153,7 @@
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "ConfigureWEC",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('logstashPipe')[0].vmName, variables('logstashPipe')[0].extensionName)]"
+                "LogstashInitialSetup"
             ],
             "properties": {
                 "mode": "Incremental",
