@@ -36,6 +36,7 @@
             "allowedValues": [
                 "empire",
                 "covenant",
+                "metasploit",
                 "shad0w"
             ],
             "metadata": {
