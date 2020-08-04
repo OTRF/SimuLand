@@ -877,7 +877,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'WEF')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "[concat(variables('windowsEventCollector')[0].vmName, '/', variables('windowsEventCollector')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
@@ -1087,7 +1087,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'WEF')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "ConfigureWEC",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -1158,7 +1158,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'WEF')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "[concat(variables('monitoredEndpoints')[copyIndex('vmSetUpWEF')].vmName, '-SetUpWEF')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
