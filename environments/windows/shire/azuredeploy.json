@@ -377,8 +377,8 @@
 
         "coreEndpoints": "[concat(variables('domainController'), variables('endpointsDynamic'), variables('c2'))]",
         "monitoredEndpoints": "[concat(variables('domainController'), variables('endpointsDynamic'))]",
-        "domainJoinedEndpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsDynamic'), variables('windowsEventCollector')),variables('endpointsDynamic'))]",
-        "allEndpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('coreEndpoints'), variables('logstashPipe'), variables('windowsEventCollector')),variables('coreEndpoints'))]",
+        "domainJoinedEndpoints": "[if(equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB'), concat(variables('endpointsDynamic'), variables('windowsEventCollector')),variables('endpointsDynamic'))]",
+        "allEndpoints": "[if(equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB'), concat(variables('coreEndpoints'), variables('logstashPipe'), variables('windowsEventCollector')),variables('coreEndpoints'))]",
 
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -408,7 +408,7 @@
             "properties": {}
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'EVENTHUB')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "deployEventHub",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -926,7 +926,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'LOGSTASH-EVENTHUB')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "[concat(variables('logstashPipe')[0].vmName, '/', variables('logstashPipe')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
@@ -942,7 +942,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat('bash Set-Logstash.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]",
+                    "commandToExecute": "[if(equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB'), concat('bash Set-Logstash.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]",
                     "fileUris": [
                         "[variables('logstashSetupScript')]",
                         "[variables('dockerInstallScript')]"
