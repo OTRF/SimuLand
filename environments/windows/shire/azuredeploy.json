@@ -685,7 +685,7 @@
             "properties": {
                 "allowVirtualNetworkAccess": true,
                 "allowForwardedTraffic": false,
-                "allowGatewayTransit": true,
+                "allowGatewayTransit": "[if(equals(parameters('remoteAccessMode'),'P2SVpn'), bool('true'), bool('false'))]",
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]"
@@ -707,7 +707,7 @@
                 "allowVirtualNetworkAccess": true,
                 "allowForwardedTraffic": false,
                 "allowGatewayTransit": false,
-                "useRemoteGateways": true,
+                "useRemoteGateways": "[if(equals(parameters('remoteAccessMode'),'P2SVpn'), bool('true'), bool('false'))]",
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]"
                 }
@@ -1122,7 +1122,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('setDataPipeline'), 'WEF-LOGSTASH')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'WEF-LOGSTASH-EVENTHUB')]",
             "name": "SetUpWECLogstash",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
