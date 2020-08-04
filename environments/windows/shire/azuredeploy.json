@@ -176,17 +176,37 @@
                 "description": "Set of bit flags that define the join options. Default value of 3 is a combination of NETSETUP_JOIN_DOMAIN (0x00000001) & NETSETUP_ACCT_CREATE (0x00000002) i.e. will join the domain and create the account on the domain. For more information see https://msdn.microsoft.com/en-us/library/aa392154(v=vs.85).aspx"
             }
         },
+        "remoteAccessMode": {
+            "type": "string",
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "P2SVpn"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
         "clientRootCertName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the client root certificate used to authenticate VPN clients. This is a common name used to identify the root cert."
-            }
+            },
+            "defaultValue": ""
         },
         "clientRootCertData": {
             "type": "string",
             "metadata": {
                 "description": "Client root certificate data used to authenticate VPN clients."
-            }
+            },
+            "defaultValue": ""
         },
         "location": {
             "type": "string",
@@ -210,6 +230,30 @@
         "subnetName3": "GatewaySubnet",
         "subnetRange3": "172.18.40.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
+        
+        "subnets": [
+            {
+                "name": "[variables('subnetName1')]",
+                "properties": {
+                    "addressPrefix": "[variables('subnetRange1')]"
+                }
+            },
+            {
+                "name": "[variables('subnetName2')]",
+                "properties": {
+                    "addressPrefix": "[variables('subnetRange2')]"
+                }
+            }
+        ],
+        "vpnSubnet": [
+            {
+                "name": "[variables('subnetName3')]",
+                "properties": {
+                    "addressPrefix": "[variables('subnetRange3')]"
+                }
+            }
+        ],
+        "allSubnets": "[if(equals(parameters('remoteAccessMode'), 'P2SVpn'), concat(variables('subnets'), variables('vpnSubnet')), variables('subnets'))]",
         
         "virtualNetworkGateway": "vnetgw-mordor",
         "vpnClientAddressPoolPrefix": "192.168.5.0/24",
@@ -237,12 +281,12 @@
 
         "nxlogConfig": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/nxlog/nxlogWEC.conf')]",
         "wefSubscriptionsUrl": "[uri(variables('artifactsBlacksmithLocation'), 'resources/configs/wef/subscriptions.zip')]",
-
+        
         "c2SetupScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-C2s.sh')]",
-
+        
         "setWallPaperScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-WallPaper.ps1')]",
 
-        "endpointsDefault": [
+        "domainController": [
             {
                 "tag": "domainController",
                 "vmName": "MORDORDC",
@@ -253,8 +297,13 @@
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
                 "sku": "[parameters('windowsServerSKU')]",
-                "version": "[parameters('windowsServerVersion')]"
-            },
+                "version": "[parameters('windowsServerVersion')]",
+                "extensionName": "SetUpDC",
+                "nsg": "nsg-rdpallow"
+            }
+        ],
+
+        "c2": [
             {
                 "tag": "c2",
                 "vmName": "TEAMSERVER",
@@ -265,7 +314,9 @@
                 "publisher": "Canonical",
                 "offer": "UbuntuServer",
                 "sku": "[parameters('ubuntuSKU')]",
-                "version": "latest"
+                "version": "latest",
+                "extensionName": "SetUpC2",
+                "nsg": "nsg-sshallow"
             }
         ],
 
@@ -283,12 +334,14 @@
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
                     "sku": "[parameters('windowsDesktopSKU')]",
-                    "version": "[parameters('windowsDesktopVersion')]"
+                    "version": "[parameters('windowsDesktopVersion')]",
+                    "extensionName": "SetUpWKS",
+                    "nsg": "nsg-rdpallow"
                 } 
             }
         ],
 
-        "endpointsLogging": [
+        "windowsEventCollector": [
             {
                 "tag": "logCollector",
                 "vmName": "WEC",
@@ -299,8 +352,13 @@
                 "publisher": "MicrosoftWindowsDesktop",
                 "offer": "Windows-10",
                 "sku": "[parameters('windowsDesktopSKU')]",
-                "version": "[parameters('windowsDesktopVersion')]"
-            },
+                "version": "[parameters('windowsDesktopVersion')]",
+                "extensionName": "SetUpWEC",
+                "nsg": "nsg-rdpallow"
+            }
+        ],
+
+        "logstashPipe": [
             {
                 "tag": "logShipper",
                 "vmName": "LOGSTASH",
@@ -311,14 +369,16 @@
                 "publisher": "Canonical",
                 "offer": "UbuntuServer",
                 "sku": "[parameters('ubuntuSKU')]",
-                "version": "latest"
+                "version": "latest",
+                "extensionName": "SetUpLogstash",
+                "nsg": "nsg-sshallow"
             }
         ],
 
-        "endpointsCore": "[concat(variables('endpointsDefault'), variables('endpointsDynamic'))]",
-        "endpointsAll": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsCore'), variables('endpointsLogging')),variables('endpointsCore'))]",
-
-        "patientZero": "[variables('endpointsDynamic')[0].vmName]",
+        "coreEndpoints": "[concat(variables('domainController'), variables('endpointsDynamic'), variables('c2'))]",
+        "monitoredEndpoints": "[concat(variables('domainController'), variables('endpointsDynamic'))]",
+        "domainJoinedEndpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('endpointsDynamic'), variables('windowsEventCollector')),variables('endpointsDynamic'))]",
+        "allEndpoints": "[if(contains(parameters('setDataPipeline'), 'LOGSTASH'), concat(variables('coreEndpoints'), variables('logstashPipe'), variables('windowsEventCollector')),variables('coreEndpoints'))]",
 
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -408,6 +468,73 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
+            "comments": "Default Network Security Group for Windows endpoints",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "nsg-rdpallow",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-3389",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "3389",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
+            "comments": "Default Network Security Group for Linux endpoints",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "nsg-sshallow",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-22",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "22",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIpCopy",
+                "count": "[length(variables('allEndpoints'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
             "name": "[variables('virtualNetworkNameA')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
@@ -418,26 +545,7 @@
                         "[variables('virtualNetworkAddressRangeA')]"
                     ]
                 },
-                "subnets": [
-                    {
-                        "name": "[variables('subnetName1')]",
-                        "properties": {
-                            "addressPrefix": "[variables('subnetRange1')]"
-                        }
-                    },
-                    {
-                        "name": "[variables('subnetName2')]",
-                        "properties": {
-                            "addressPrefix": "[variables('subnetRange2')]"
-                        }
-                    },
-                    {
-                        "name": "[variables('subnetName3')]",
-                        "properties": {
-                            "addressPrefix": "[variables('subnetRange3')]"
-                        }
-                    }
-                ]
+                "subnets": "[if(equals(parameters('remoteAccessMode'),'P2SVpn'), variables('allSubnets'), variables('subnets'))]"
             }
         },
         {
@@ -462,6 +570,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'), 'P2SVpn')]",
             "name": "pip-gateway",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
@@ -474,6 +583,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'), 'P2SVpn')]",
             "name": "[variables('virtualNetworkGateway')]",
             "type": "Microsoft.Network/virtualNetworkGateways",
             "apiVersion": "2019-11-01",
@@ -525,27 +635,32 @@
             }
         },
         {
-            "name": "[concat('nic-', variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
+            "name": "[concat('nic-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
             ],
             "copy": {
                 "name": "vmNetworkInterfaceCopy",
-                "count": "[length(variables('endpointsAll'))]"
+                "count": "[length(variables('allEndpoints'))]"
             },
             "properties": {
+                "networkSecurityGroup": {
+                    "id": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), resourceId('Microsoft.Network/networkSecurityGroups', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].nsg), json('null'))]"
+                },
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
+                            "privateIPAddress": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "subnet": {
-                                "id": "[variables('endpointsAll')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
+                                "id": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
                             }
                         }
                     }
@@ -595,34 +710,34 @@
             }
         },
         {
-            "name": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmName]",
+            "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
             ],
             "copy": {
                 "name": "vmVMCopy",
-                "count": "[length(variables('endpointsAll'))]"
+                "count": "[length(variables('allEndpoints'))]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmSize]"
+                    "vmSize": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('endpointsAll')[copyIndex('vmVMCopy')].vmName]",
+                    "computerName": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
-                    "linuxConfiguration": "[if(equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
+                    "linuxConfiguration": "[if(equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'linux'), if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration')), json('null'))]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('endpointsAll')[copyIndex('vmVMCopy')].publisher]",
-                        "offer": "[variables('endpointsAll')[copyIndex('vmVMCopy')].offer]",
-                        "sku": "[variables('endpointsAll')[copyIndex('vmVMCopy')].sku]",
-                        "version": "[variables('endpointsAll')[copyIndex('vmVMCopy')].version]"
+                        "publisher": "[variables('allEndpoints')[copyIndex('vmVMCopy')].publisher]",
+                        "offer": "[variables('allEndpoints')[copyIndex('vmVMCopy')].offer]",
+                        "sku": "[variables('allEndpoints')[copyIndex('vmVMCopy')].sku]",
+                        "version": "[variables('allEndpoints')[copyIndex('vmVMCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -632,7 +747,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
                         }
                     ]
                 },
@@ -645,13 +760,13 @@
             },
             "resources": [
                 {
-                    "condition": "[equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'windows')]",
+                    "condition": "[equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'windows')]",
                     "name": "AntiMalware",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Security",
@@ -677,13 +792,13 @@
                     }
                 },
                 {
-                    "condition": "[equals(variables('endpointsAll')[copyIndex('vmVMCopy')].os, 'windows')]",
+                    "condition": "[equals(variables('allEndpoints')[copyIndex('vmVMCopy')].os, 'windows')]",
                     "name": "Microsoft.Azure.NetworkWatcher",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('vmVMCopy')].vmName)]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName)]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.NetworkWatcher",
@@ -695,17 +810,16 @@
             ]
         },
         {
-            "condition": "[equals(variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].tag, 'workstation')]",
-            "name": "[concat(variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].vmName, '/SetUpWKS')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
             ],
             "copy": {
                 "name": "InitialSetUpWKSCopy",
-                "count": "[length(variables('endpointsAll'))]"
+                "count": "[length(variables('endpointsDynamic'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -724,18 +838,18 @@
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
                     ],
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('endpointsAll')[0].ipAddress)]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('allEndpoints')[0].ipAddress)]"
                 },
                 "protectedSettings": {}
             }
         },
         {
-            "name": "[concat(variables('endpointsAll')[0].vmName, '/SetUpDC')]",
+            "name": "[concat(variables('domainController')[0].vmName, '/', variables('domainController')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[0].vmName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('domainController')[0].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -760,12 +874,12 @@
         },
         {
             "condition": "[contains(parameters('setDataPipeline'), 'WEF')]",
-            "name": "[concat(variables('endpointsLogging')[0].vmName, '/SetUpWEC')]",
+            "name": "[concat(variables('windowsEventCollector')[0].vmName, '/', variables('windowsEventCollector')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "InitialSetUpWKSCopy"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('windowsEventCollector')[0].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -779,18 +893,18 @@
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
                     ],
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('endpointsAll')[0].ipAddress)]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-WEC.ps1', ' ', '-ServerAddresses', ' ', variables('domainController')[0].ipAddress)]"
                 },
                 "protectedSettings": {}
             }
         },
         {
-            "name": "[concat(variables('endpointsAll')[1].vmName, '/SetUpC2')]",
+            "name": "[concat(variables('c2')[0].vmName, '/', variables('c2')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsAll')[1].vmName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('c2')[0].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -809,12 +923,12 @@
         },
         {
             "condition": "[contains(parameters('setDataPipeline'), 'LOGSTASH-EVENTHUB')]",
-            "name": "[concat(variables('endpointsLogging')[1].vmName, '/SetUpLogstash')]",
+            "name": "[concat(variables('logstashPipe')[0].vmName, '/', variables('logstashPipe')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpointsLogging')[1].vmName)]",
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('logstashPipe')[0].vmName)]",
                 "deployEventHub"
             ],
             "properties": {
@@ -833,13 +947,13 @@
             }
         },
         {
-            "name": "[concat(variables('endpointsAll')[0].vmName, '/CreateADForest')]",
+            "name": "[concat(variables('domainController')[0].vmName, '/CreateADForest')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'AntiMalware')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'SetUpDC')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'AntiMalware')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -869,7 +983,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[0].vmName, 'CreateADForest')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'CreateADForest')]",
                 "[concat('Microsoft.Network/virtualNetworkGateways/', variables('virtualNetworkGateway'))]"
             ],
             "properties": {
@@ -885,27 +999,12 @@
                     "virtualNetworkAddressRange": {
                         "value": "[variables('virtualNetworkAddressRangeA')]"
                     },
-                    "subnetName1": {
-                        "value": "[variables('subnetName1')]"
-                    },
-                    "subnetRange1": {
-                        "value": "[variables('subnetRange1')]"
-                    },
-                    "subnetName2": {
-                        "value": "[variables('subnetName2')]"
-                    },
-                    "subnetRange2": {
-                        "value": "[variables('subnetRange2')]"
-                    },
-                    "subnetName3": {
-                        "value": "[variables('subnetName3')]"
-                    },
-                    "subnetRange3": {
-                        "value": "[variables('subnetRange3')]"
+                    "subnets": {
+                        "value": "[variables('allSubnets')]"
                     },
                     "DNSServerAddress": {
                         "value": [
-                            "[variables('endpointsAll')[0].ipAddress]"
+                            "[variables('allEndpoints')[0].ipAddress]"
                         ]
                     },
                     "location": {
@@ -929,10 +1028,10 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetUpDC"
+                        "value": "[variables('domainController')[0].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('endpointsAll')[0].vmName)]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('domainController')[0].vmName)]"
                     },
                     "fileUris": {
                         "value": [
@@ -943,7 +1042,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpointsAll')[0].vmName]"
+                        "value": "[variables('domainController')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -952,19 +1051,19 @@
             }
         },
         {
-            "condition": "[or(equals(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].tag, 'workstation'), equals(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].tag, 'logCollector'))]",
-            "name": "[concat(variables('endpointsAll')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
+            "name": "[concat(variables('domainJoinedEndpoints')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "InitialSetUpWKSCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('windowsEventCollector')[0].vmName, variables('windowsEventCollector')[0].extensionName)]",
                 "ADSetup",
                 "UpdateVNetDNS"
             ],
             "copy": {
                 "name": "vmDomainJoinCopy",
-                "count": "[length(variables('endpointsAll'))]"
+                "count": "[length(variables('domainJoinedEndpoints'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -999,7 +1098,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetUpWEC"
+                        "value": "[variables('windowsEventCollector')[0].extensionName]"
                     },
                     "commandToExecute": {
                         "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEC.ps1',' ', '-SubscriptionsUrl',' ', variables('wefSubscriptionsUrl'))]"
@@ -1010,7 +1109,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpointsLogging')[0].vmName]"
+                        "value": "[variables('windowsEventCollector')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -1025,7 +1124,7 @@
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "ConfigureWEC",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsLogging')[1].vmName, 'SetUpLogstash')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('logstashPipe')[0].vmName, variables('logstashPipe')[0].extensionName)]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1035,10 +1134,10 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetUpWEC"
+                        "value": "[variables('windowsEventCollector')[0].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-Log-Shipper.ps1', ' ', '-DestinationIP', ' ', variables('endpointsLogging')[1].ipAddress, ' ', '-ShipperAgent Nxlog', ' ', '-ConfigUrl', ' ', variables('nxlogConfig'))]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-Log-Shipper.ps1', ' ', '-DestinationIP', ' ', variables('logstashPipe')[0].ipAddress, ' ', '-ShipperAgent Nxlog', ' ', '-ConfigUrl', ' ', variables('nxlogConfig'))]"
                     },
                     "fileUris": {
                         "value": [
@@ -1046,7 +1145,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpointsLogging')[0].vmName]"
+                        "value": "[variables('windowsEventCollector')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -1055,8 +1154,8 @@
             }
         },
         {
-            "condition": "[and(contains(parameters('setDataPipeline'), 'WEF'),or(equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'workstation'), equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'domainController')))]",
-            "name": "[concat(variables('endpointsAll')[copyIndex('vmSetUpWEF')].vmName, '-SetUpWEF')]",
+            "condition": "[contains(parameters('setDataPipeline'), 'WEF')]",
+            "name": "[concat(variables('monitoredEndpoints')[copyIndex('vmSetUpWEF')].vmName, '-SetUpWEF')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -1064,7 +1163,7 @@
             ],
             "copy": {
                 "name": "vmSetUpWEF",
-                "count": "[length(variables('endpointsAll'))]"
+                "count": "[length(variables('monitoredEndpoints'))]"
             },
             "properties": {
                 "mode": "Incremental",
@@ -1074,10 +1173,10 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "[if(equals(variables('endpointsAll')[copyIndex('vmSetUpWEF')].tag, 'workstation'), 'SetUpWks', 'SetUpDC')]"
+                        "value": "[variables('monitoredEndpoints')[copyIndex('vmSetUpWEF')].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEF-Client.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'), ' ', '-WECNetBIOSName', ' ', variables('endpointsLogging')[0].vmName)]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEF-Client.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'), ' ', '-WECNetBIOSName', ' ', variables('windowsEventCollector')[0].vmName)]"
                     },
                     "fileUris": {
                         "value": [
@@ -1085,7 +1184,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpointsAll')[copyIndex('vmSetUpWEF')].vmName]"
+                        "value": "[variables('monitoredEndpoints')[copyIndex('vmSetUpWEF')].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -1094,17 +1193,17 @@
             }
         },
         {
-            "condition": "[and(equals(parameters('setDataPipeline'), 'AZURESENTINEL'), equals(variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].os, 'windows'))]",
-            "name": "[concat(variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].vmName,'/LogAnalytics.Agent')]",
+            "condition": "[equals(parameters('setDataPipeline'), 'AZURESENTINEL')]",
+            "name": "[concat(variables('monitoredEndpoints')[copyIndex('MMACopy')].vmName,'/MSMonitoringAgent')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsAll')[copyIndex('LogAnalyticsAgentCopy')].vmName, 'joindomain')]"
+                "vmDomainJoinCopy"
             ],
             "copy": {
-                "name": "LogAnalyticsAgentCopy",
-                "count": "[length(variables('endpointsAll'))]"
+                "name": "MMACopy",
+                "count": "[length(variables('monitoredEndpoints'))]"
             },
             "properties": {
                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -1131,7 +1230,7 @@
         },
         "endpointsDeployed": {
             "type": "array",
-            "value": "[variables('endpointsAll')]"
+            "value": "[variables('allEndpoints')]"
         }
     }
 }
