@@ -46,12 +46,24 @@ else
         az network watcher packet-capture create --resource-group ${RESOURCE_GROUP} --vm ${COMPUTER} --name "${COMPUTER}_PCAP" --storage-account ${STORAGE_ACCOUNT} --filters "
     [
         {
-            \"localIPAddress\":\"10.0.0.0-10.0.1.9\",
-            \"remoteIPAddress\":\"10.0.0.0-10.0.1.9\"
+            \"localIPAddress\":\"172.18.39.0-172.18.39.255\",
+            \"remoteIPAddress\":\"172.18.38.5\"
         },
         {
-            \"localIPAddress\":\"10.0.0.0-10.0.1.9\",
-            \"remoteIPAddress\":\"192.168.0.0-192.168.0.10\"
+            \"localIPAddress\":\"172.18.38.5\",
+            \"remoteIPAddress\":\"172.18.39.0-172.18.39.255\"
+        },
+        {
+            \"localIPAddress\":\"172.18.39.0-172.18.39.255\",
+            \"remoteIPAddress\":\"172.18.39.0-172.18.39.255\"
+        },
+        {
+            \"localIPAddress\":\"172.18.39.0-172.18.39.255\",
+            \"remoteIPAddress\":\"10.10.10.5\"
+        },
+        {
+            \"localIPAddress\":\"10.10.10.5\",
+            \"remoteIPAddress\":\"172.18.39.0-172.18.39.255\"
         }
     ]
     "
