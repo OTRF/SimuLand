@@ -164,7 +164,7 @@
         },
         "domainFQDN": {
             "type": "string",
-            "defaultValue": "mordor.local",
+            "defaultValue": "theshire.local",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             }
@@ -509,6 +509,19 @@
                             "access": "Allow",
                             "direction": "Inbound",
                             "destinationPortRange": "22",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "default-covenant-7443",
+                        "properties": {
+                            "priority": 110,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "7443",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
