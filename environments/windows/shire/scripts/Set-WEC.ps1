@@ -3,13 +3,13 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     [string]$ServerAddresses
 )
 
 & .\Prepare-Box.ps1
 
-& .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
-
 # Set Wallpaper
 & .\Set-WallPaper.ps1
+
+& .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
