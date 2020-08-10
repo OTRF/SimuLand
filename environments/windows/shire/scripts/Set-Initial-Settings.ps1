@@ -30,12 +30,6 @@ else{
 # Set SACLs
 & .\Set-SACLs.ps1
 
-# Setting static IP and DNS server IP
-if ($ServerAddresses)
-{
-    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
-}
-
 # Set Wallpaper
 & .\Set-WallPaper.ps1
 
@@ -57,3 +51,9 @@ Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\P
 # RDP enabled for all Windows hosts
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+# Setting static IP and DNS server IP
+if ($ServerAddresses)
+{
+    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
+}
