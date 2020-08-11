@@ -33,25 +33,6 @@ else{
 # Set Wallpaper
 & .\Set-WallPaper.ps1
 
-# *** Powershell execution policy is set to "Bypass" ***
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
-
-# *** Registry modified to allow storage of wdigest credentials ***
-Write-Host "Setting WDigest to use logoncredential.."
-Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"
-
-# Configured firewall to allow SMB
-Write-Host "Enable File and Printer Sharing"
-& netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
-
-# Setting UAC level to Never Notify
-Write-Host "Setting UAC level to Never Notify.."
-Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0
-
-# RDP enabled for all Windows hosts
-Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
-Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-
 # Setting static IP and DNS server IP
 if ($ServerAddresses)
 {
