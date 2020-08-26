@@ -9,40 +9,6 @@
             },
             "defaultValue": "[utcNow()]"
         },
-        "numberOfWorkstations": {
-            "type": "int",
-            "defaultValue": 2,
-            "minValue": 1,
-            "maxValue": 100,
-            "metadata": {
-                "description": "Number of VMs to deploy"
-            }
-        },
-        "setDataPipeline": {
-            "type": "string",
-            "defaultValue": "WEF-LOGSTASH-EVENTHUB",
-            "allowedValues": [
-                "",
-                "WEF-LOGSTASH-EVENTHUB",
-                "AZURESENTINEL"
-            ],
-            "metadata": {
-                "description": "The specific data pipeline that you would like to use to aggregate and analyze security events"
-            }
-        },
-        "c2Framework": {
-            "type": "string",
-            "defaultValue": "covenant",
-            "allowedValues": [
-                "empire",
-                "covenant",
-                "metasploit",
-                "shad0w"
-            ],
-            "metadata": {
-                "description": "C2 framework to deploy"
-            }
-        },
         "adminUsername": {
             "type": "string",
             "metadata": {
@@ -72,6 +38,59 @@
                 "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
             },
             "defaultValue": ""
+        },
+        "remoteAccessMode": {
+            "type": "string",
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "P2SVpn"
+            ],
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up a Point-To-Site VPN. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'. If the later, make sure you set 'clientRootCertName' and 'clientRootCertData'"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "clientRootCertName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the client root certificate used to authenticate VPN clients. This is a common name used to identify the root cert."
+            },
+            "defaultValue": ""
+        },
+        "clientRootCertData": {
+            "type": "string",
+            "metadata": {
+                "description": "Client root certificate data used to authenticate VPN clients."
+            },
+            "defaultValue": ""
+        },
+        "setDataPipeline": {
+            "type": "string",
+            "defaultValue": "WEF-LOGSTASH-EVENTHUB",
+            "allowedValues": [
+                "",
+                "WEF-LOGSTASH-EVENTHUB",
+                "AZURESENTINEL"
+            ],
+            "metadata": {
+                "description": "The specific data pipeline that you would like to use to aggregate and analyze security events"
+            }
+        },
+        "numberOfWorkstations": {
+            "type": "int",
+            "defaultValue": 2,
+            "minValue": 1,
+            "maxValue": 100,
+            "metadata": {
+                "description": "Number of VMs to deploy"
+            }
         },
         "windowsDesktopSKU": {
             "type": "string",
@@ -123,6 +142,19 @@
                 "description": "Size of the virtual machine."
             }
         },
+        "c2Framework": {
+            "type": "string",
+            "defaultValue": "covenant",
+            "allowedValues": [
+                "empire",
+                "covenant",
+                "metasploit",
+                "shad0w"
+            ],
+            "metadata": {
+                "description": "C2 framework to deploy"
+            }
+        },
         "ubuntuSKU": {
             "type": "string",
             "defaultValue": "18.04-LTS",
@@ -148,20 +180,6 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "_artifactsLocation": {
-            "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/mordor-labs/master/",
-            "metadata": {
-                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-            }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
-            }
-        },
         "domainFQDN": {
             "type": "string",
             "defaultValue": "theshire.local",
@@ -176,37 +194,19 @@
                 "description": "Set of bit flags that define the join options. Default value of 3 is a combination of NETSETUP_JOIN_DOMAIN (0x00000001) & NETSETUP_ACCT_CREATE (0x00000002) i.e. will join the domain and create the account on the domain. For more information see https://msdn.microsoft.com/en-us/library/aa392154(v=vs.85).aspx"
             }
         },
-        "remoteAccessMode": {
+        "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "AllowPublicIP",
-            "allowedValues": [
-                "AllowPublicIP",
-                "P2SVpn"
-            ],
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/mordor-labs/master/",
             "metadata": {
-                "description": "Do you want to restrict access to your environment by a Public IP or set up a Point-To-Site VPN. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'. If the later, make sure you set 'clientRootCertName' and 'clientRootCertData'"
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
         },
-        "allowedIPAddresses": {
-            "type": "string",
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
             "metadata": {
-                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
-            },
-            "defaultValue": "*"
-        },
-        "clientRootCertName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the client root certificate used to authenticate VPN clients. This is a common name used to identify the root cert."
-            },
-            "defaultValue": ""
-        },
-        "clientRootCertData": {
-            "type": "string",
-            "metadata": {
-                "description": "Client root certificate data used to authenticate VPN clients."
-            },
-            "defaultValue": ""
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
         },
         "location": {
             "type": "string",
@@ -221,16 +221,29 @@
         
         "virtualNetworkNameA": "vnet-office",
         "virtualNetworkAddressRangeA": "172.18.0.0/16",
+
         "subnetName1": "snet-servers",
         "subnetRange1": "172.18.38.0/24",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName1'))]",
+        
         "subnetName2": "snet-workstations",
         "subnetRange2": "172.18.39.0/24",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName2'))]",
+        
         "subnetName3": "GatewaySubnet",
         "subnetRange3": "172.18.40.0/24",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameA'), variables('subnetName3'))]",
         
+        "virtualNetworkGateway": "vnetgw-mordor",
+        "vpnClientAddressPoolPrefix": "192.168.5.0/24",
+        
+        "virtualNetworkNameB": "vnet-attacker",
+        "virtualNetworkAddressRangeB": "10.10.0.0/16",
+        
+        "subnetName4": "snet-attacker",
+        "subnetRange4": "10.10.10.0/24",
+        "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
+
         "subnets": [
             {
                 "name": "[variables('subnetName1')]",
@@ -254,17 +267,8 @@
             }
         ],
         "allSubnets": "[if(equals(parameters('remoteAccessMode'), 'P2SVpn'), concat(variables('subnets'), variables('vpnSubnet')), variables('subnets'))]",
-        
-        "virtualNetworkGateway": "vnetgw-mordor",
-        "vpnClientAddressPoolPrefix": "192.168.5.0/24",
-        
-        "virtualNetworkNameB": "vnet-attacker",
-        "virtualNetworkAddressRangeB": "10.10.0.0/16",
-        "subnetName4": "snet-attacker",
-        "subnetRange4": "10.10.10.0/24",
-        "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
-        "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
+        "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
 
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/windows/shire/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
@@ -273,7 +277,7 @@
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
         "enablePowerShellLoggingScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
         "installAgentScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1')]",
-        "downloadSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
+        "downloadSACLScript": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
         
@@ -300,7 +304,7 @@
                 "sku": "[parameters('windowsServerSKU')]",
                 "version": "[parameters('windowsServerVersion')]",
                 "extensionName": "SetUpDC",
-                "nsg": "nsg-rdpallow"
+                "nsg": "nsg-rdp-allow"
             }
         ],
         
@@ -320,7 +324,7 @@
                     "sku": "[parameters('windowsDesktopSKU')]",
                     "version": "[parameters('windowsDesktopVersion')]",
                     "extensionName": "SetUpWKS",
-                    "nsg": "nsg-rdpallow"
+                    "nsg": "nsg-rdp-allow"
                 } 
             }
         ],
@@ -338,7 +342,7 @@
                 "sku": "[parameters('windowsDesktopSKU')]",
                 "version": "[parameters('windowsDesktopVersion')]",
                 "extensionName": "SetUpWEC",
-                "nsg": "nsg-rdpallow"
+                "nsg": "nsg-rdp-allow"
             }
         ],
 
@@ -355,7 +359,7 @@
                 "sku": "[parameters('ubuntuSKU')]",
                 "version": "latest",
                 "extensionName": "SetUpLogstash",
-                "nsg": "nsg-sshallow"
+                "nsg": "nsg-ssh-allow"
             }
         ],
 
@@ -372,7 +376,7 @@
                 "sku": "[parameters('ubuntuSKU')]",
                 "version": "latest",
                 "extensionName": "SetUpC2",
-                "nsg": "nsg-sshallow"
+                "nsg": "nsg-ssh-allow"
             }
         ],
 
@@ -462,7 +466,8 @@
                             "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
                             "Windows PowerShell",
                             "Microsoft-Windows-PowerShell/Operational",
-                            "Microsoft-Windows-WMI-Activity/Operational"
+                            "Microsoft-Windows-WMI-Activity/Operational",
+                            "Microsoft-Windows-TaskScheduler/Operational"
                         ]
                     }
                 }
@@ -473,7 +478,7 @@
             "comments": "Default Network Security Group for Windows endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
-            "name": "nsg-rdpallow",
+            "name": "nsg-rdp-allow",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
@@ -498,7 +503,7 @@
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
-            "name": "nsg-sshallow",
+            "name": "nsg-ssh-allow",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
@@ -529,23 +534,6 @@
                         }
                     }
                 ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
-            "location": "[parameters('location')]",
-            "copy": {
-                "name": "vmPublicIpCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
-                }
             }
         },
         {
@@ -657,8 +645,8 @@
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameA'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkNameB'))]",
                 "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdp-allow')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-ssh-allow')]"
             ],
             "copy": {
                 "name": "vmNetworkInterfaceCopy",
