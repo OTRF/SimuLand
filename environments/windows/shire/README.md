@@ -21,10 +21,10 @@
 
 ## Data Sources Collected
 
-* [Windows Security Auditing](https://github.com/hunters-forge/Blacksmith/blob/master/resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1)
-* [Sysmon Config](https://github.com/hunters-forge/Blacksmith/blob/master/resources/configs/sysmon/sysmonv11.0.xml)
-* [WEF Subscriptions](https://github.com/hunters-forge/Blacksmith/tree/master/resources/configs/wef/subscriptions)
-* [SACL Audit Rules](https://github.com/hunters-forge/Blacksmith/blob/master/resources/scripts/powershell/auditing/Set-SACLs.ps1)
+* [Windows Security Auditing](https://github.com/OTRF/Blacksmith/blob/master/resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1)
+* [Sysmon Config](https://github.com/OTRF/Blacksmith/blob/master/resources/configs/sysmon/sysmonv11.0.xml)
+* [WEF Subscriptions](https://github.com/OTRF/Blacksmith/tree/master/resources/configs/wef/subscriptions)
+* [SACL Audit Rules](https://github.com/OTRF/Blacksmith/blob/master/resources/scripts/powershell/auditing/Set-SACLs.ps1)
 
 ## Deployment
 

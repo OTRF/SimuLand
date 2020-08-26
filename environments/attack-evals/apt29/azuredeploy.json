@@ -215,7 +215,7 @@
         "subnetRange4": "192.168.0.0/24",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkNameB'), variables('subnetName4'))]",
 
-        "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
+        "artifactsBlacksmithLocation": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
 
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "dockerInstallScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/bash/Install-Docker.sh')]",
@@ -223,7 +223,7 @@
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
         "enablePowerShellLoggingScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
         "installAgentScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1')]",
-        "downloadSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
+        "downloadSACLScript": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
         
