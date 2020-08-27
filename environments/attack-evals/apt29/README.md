@@ -6,7 +6,7 @@ This Mordor environment was built to replicate a similar setup developed by the 
 
 ## Blog Post
 
-https://medium.com/threat-hunters-forge/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
+https://medium.com/threat-OTRF/mordor-labs-part-1-deploying-att-ck-apt29-evals-environments-via-arm-templates-to-create-1c6c4bc32c9a
 
 ## Network Design
 
