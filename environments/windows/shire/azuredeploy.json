@@ -637,6 +637,23 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIpCopy",
+                "count": "[length(variables('allEndpoints'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
             "name": "[concat('nic-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
