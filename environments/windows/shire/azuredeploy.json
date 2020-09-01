@@ -679,9 +679,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
-                            "publicIPAddress": {
-                                "id": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'),resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)), json('null'))]"
-                            },
+                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
                             "subnet": {
                                 "id": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
                             }
