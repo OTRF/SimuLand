@@ -4,12 +4,12 @@
     "ParameterValue": "aws-ubuntu-key"
   },
   {
-    "ParameterKey": "NetworkStackName",
+    "ParameterKey": "MordorStackName",
     "ParameterValue": "MordorVPCStack"
   },
   {
     "ParameterKey": "InstanceType",
-    "ParameterValue": "t2.xlarge"
+    "ParameterValue": "t2.micro"
   }, 
   {
     "ParameterKey": "PrivateIP",

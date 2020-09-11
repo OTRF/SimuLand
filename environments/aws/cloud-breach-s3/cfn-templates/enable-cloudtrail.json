@@ -32,7 +32,8 @@
                                         "", [
                                           "arn:",
                                           "aws:s3:::",
-                                          { "Fn::ImportValue" : {"Fn::Sub": "${MordorStackName}-BucketName" } }
+                                          { "Fn::ImportValue" : {"Fn::Sub": "${MordorStackName}-BucketName" } },
+                                          "/"
                                         ]
                                       ]
                                     }

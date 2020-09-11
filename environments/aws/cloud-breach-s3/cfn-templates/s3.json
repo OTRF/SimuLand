@@ -4,20 +4,9 @@
     "Resources" : {
         "S3Bucket" : {
             "Type" : "AWS::S3::Bucket",
-            "DeletionPolicy": "delete",
+            "DeletionPolicy": "Delete",
             "Properties" : {
                 "AccessControl": "Private"
-            }
-        },
-        "S3Object": {
-            "Type": "AWS::S3::Object",
-            "Properties": {
-                "Target": {
-                    "Bucket": {"Ref": "S3Bucket"},
-                    "Key": "README.md",
-                    "ContentType": "text/markdown"
-                },
-                "Body": "Ash nazg durbatulûk, ash nazg gimbatul, ash nazg thrakatulûk, agh burzum-ishi krimpatul"
             }
         }
     },

@@ -22,7 +22,7 @@
         "InstanceType" : {
             "Description" : " EC2 instance type.",
             "Type" : "String",
-            "Default" : "t2.xlarge",
+            "Default" : "t2.micro",
             "AllowedValues" : [ "t2.micro", "t2.small", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge" ]
         },
         "PrivateIP" : {
@@ -33,13 +33,18 @@
     },
     "Mappings" : {
         "UbuntuAWSRegionArch2AMI" : {
-            "us-east-1" : { "HVM64" : "ami-064a0193585662d74" },
-            "us-west-1" : { "HVM64" : "ami-056d04da775d124d7" },
-            "us-west-2" : { "HVM64" : "ami-09a3d8a7177216dcf" }
+            "us-east-1" : { "HVM64" : "ami-0817d428a6fb68645" },
+            "us-east-2" : { "HVM64" : "ami-0e82959d4ed12de3f" },
+            "us-west-1" : { "HVM64" : "ami-03fac5402e10ea93b" },
+            "us-west-2" : { "HVM64" : "ami-07a29e5e945228fa1" },
+            "eu-north-1" : { "HVM64" : "ami-0ede7f804d699ea83" },
+            "ap-south-1" : { "HVM64" : "ami-03f0fd1a2ba530e75" },
+            "eu-west-1" : { "HVM64" : "ami-0823c236601fef765" },
+            "eu-west-2" : { "HVM64" : "ami-09a1e275e350acf38" }
         }
     },
     "Resources" : {
-        "banking-WAF-Role" : {
+        "BankingWAFRole" : {
             "Type" : "AWS::IAM::Role",
             "Properties" : {
                 "AssumeRolePolicyDocument": {
@@ -70,15 +75,15 @@
                         }
                     }
                 ],
-                "RoleName" : {"Fn::Join" : [ "-", [ "banking-WAF-Role", "${aws:userid}" ] ]}
+                "RoleName" : "BankingWAFRole"
             }
         },
-        "ec2-instance-profile": {
+        "EC2InstanceProfile": {
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
-                "InstanceProfileName": {"Fn::Join" : [ "-", [ { "Ref": "ec2-instance-profile"}, "${aws:userid}" ] ]},
+                "InstanceProfileName": "EC2InstanceProfile",
                 "Roles": [ {
-                    "Ref": "banking-WAF-Role"
+                    "Ref": "BankingWAFRole"
                 } ]
             }
          },
@@ -151,23 +156,26 @@
                                     ]
                                 }
                             },
-                            "files" : {
-                                "/home/ubuntu/proxy.com" : {
-                                  "content" : { "Fn::Join" : ["", [
-                                    "server {\n",
-                                        "listen 80 default_server;\n",
-                                        "if ($host != '169.254.169.254') {\n",
-                                            "return 400 '<h1>This server is configured to proxy requests to the EC2 metadata service. Please modify your request's 'host' header and try again.</h1>';\n",
-                                        "}\n",
-                                        "location / {\n",
-                                            "proxy_pass  http://$host;\n",
-                                        "}\n",
-                                    "}\n"
-                                  ]]},
-                                  "mode"   : "000755",
-                                  "owner"  : "root",
-                                  "group"  : "root"
-                                }
+                            "/tmp/proxy.com" : {
+                                "content" : {
+                                    "Fn::Join" : [
+                                        "", 
+                                        [
+                                            "server {\n",
+                                                "listen 80 default_server;\n",
+                                                "if ($host != '169.254.169.254') {\n",
+                                                    "return 400 '<h1>This server is configured to proxy requests to the EC2 metadata service. Please modify your request's 'host' header and try again.</h1>';\n",
+                                                "}\n",
+                                                "location / {\n",
+                                                    "proxy_pass  http://$host;\n",
+                                                "}\n",
+                                            "}\n"
+                                        ]
+                                    ]
+                                },
+                                "mode"   : "000755",
+                                "owner"  : "root",
+                                "group"  : "root"
                             }
                         }, 
                         "commands" : {
@@ -177,13 +185,12 @@
                             "b-start_cfn_hup" : {
                                 "command" : "systemctl start cfn-hup.service"
                             }
-                        },
-                        "packages" : {}
+                        }
                     }
                 }
             },
             "Properties" : {
-                "IamInstanceProfile": { "Ref": "ec2-instance-profile" },
+                "IamInstanceProfile": { "Ref": "EC2InstanceProfile" },
                 "InstanceType" : { "Ref" : "InstanceType" },
                 "ImageId" : { "Fn::FindInMap" : [ "UbuntuAWSRegionArch2AMI", { "Ref" : "AWS::Region" }, "HVM64" ] },
                 "KeyName" : { "Ref" : "KeyName" },
@@ -212,7 +219,7 @@
 
                                 "apt-get install -y nginx\n",
                                 "ufw allow 'Nginx HTTP'\n",
-                                "cp /home/ubuntu/proxy.com /etc/nginx/sites-enabled/proxy.com\n",
+                                "cp /tmp/proxy.com /etc/nginx/sites-enabled/proxy.com\n",
                                 "rm /etc/nginx/sites-enabled/default\n",
                                 "systemctl restart nginx\n",
 
