@@ -1,0 +1,31 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters" : {},
+    "Resources" : {
+        "S3Bucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "DeletionPolicy": "delete",
+            "Properties" : {
+                "AccessControl": "Private"
+            }
+        },
+        "S3Object": {
+            "Type": "AWS::S3::Object",
+            "Properties": {
+                "Target": {
+                    "Bucket": {"Ref": "S3Bucket"},
+                    "Key": "README.md",
+                    "ContentType": "text/markdown"
+                },
+                "Body": "Ash nazg durbatulûk, ash nazg gimbatul, ash nazg thrakatulûk, agh burzum-ishi krimpatul"
+            }
+        }
+    },
+    "Outputs" : {
+        "BucketName": {
+            "Value": {"Ref": "S3Bucket"},
+            "Description": "Name of the sample Amazon S3 bucket with CORS enabled.",
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-BucketName" }}
+        }
+    }
+}

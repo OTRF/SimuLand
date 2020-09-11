@@ -1,0 +1,117 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters" : {
+        "MordorStackName": {
+            "Description": "Name of the stack that created the S3 bucket where we are collecting event logs from.",
+            "Type": "String",
+            "MinLength" : 1,
+            "MaxLength" : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default" : "MordorS3Stack"
+        }
+    },
+    "Resources" : {
+        "CloudTrail": {
+            "Type": "AWS::CloudTrail::Trail",
+            "Properties": {
+                "TrailName": "GlobalS3DataEventsTrail",
+                "IsLogging": true,
+                "EnableLogFileValidation": true,
+                "EventSelectors": [
+                    {
+                        "IncludeManagementEvents": true,
+                        "ReadWriteType": "All"
+                    },
+                    {
+                        "DataResources": [
+                            {
+                                "Type": "AWS::S3::Object",
+                                "Values": [
+                                    {
+                                        "Fn::Join": [
+                                        "", [
+                                          "arn:",
+                                          "aws:s3:::",
+                                          { "Fn::ImportValue" : {"Fn::Sub": "${MordorStackName}-BucketName" } }
+                                        ]
+                                      ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "ReadWriteType": "All"
+                    }
+                ],
+                "IsMultiRegionTrail": true,
+                "IncludeGlobalServiceEvents": true,
+                "S3BucketName": {
+                    "Ref": "S3BucketForCloudTrail"
+                }
+            },
+            "DependsOn": "S3BucketPolicy"
+        },
+        "S3BucketForCloudTrail": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {}
+        },
+        "S3BucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "S3BucketForCloudTrail"
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AWSCloudTrailBucketPermissionsCheck",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "cloudtrail.amazonaws.com"
+                                ]
+                            },
+                            "Action": "s3:GetBucketAcl",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "S3BucketForCloudTrail",
+                                    "Arn"
+                                ]
+                            }
+                        },
+                        {
+                            "Sid": " AWSConfigBucketDelivery",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "cloudtrail.amazonaws.com"
+                                ]
+                            },
+                            "Action": "s3:PutObject",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        {
+                                            "Fn::GetAtt": [
+                                                "S3BucketForCloudTrail",
+                                                "Arn"
+                                            ]
+                                        },
+                                        "/AWSLogs/*"
+                                    ]
+                                ]
+                            },
+                            "Condition": {
+                                "StringEquals": {
+                                    "s3:x-amz-acl": "bucket-owner-full-control"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Outputs" : {}
+}
