@@ -1,0 +1,43 @@
+version: '3.5'
+
+services:
+  mordor-zookeeper:
+    image: otrf/helk-zookeeper:2.4.0
+    container_name: helk-zookeeper
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "1m"
+    restart: always
+    networks:
+      mordor:
+  mordor-kafka-broker:
+    image: otrf/helk-kafka-broker:2.4.0
+    container_name: mordor-kafka-broker
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "1m"
+    restart: always
+    depends_on:
+      - mordor-zookeeper
+    environment:
+      KAFKA_BROKER_NAME: mordor-kafka-broker
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_PORT: 9092
+      REPLICATION_FACTOR: 1
+      ADVERTISED_LISTENER: ${ADVERTISED_LISTENER}
+      ZOOKEEPER_NAME: mordor-zookeeper
+      KAFKA_CREATE_TOPICS: cloudtrail
+      KAFKA_HEAP_OPTS: -Xmx1G -Xms256M
+      LOG_RETENTION_HOURS: 4
+    ports:
+      - "9092:9092"
+    networks:
+      mordor:
+
+networks:
+  mordor:
+    driver: bridge
