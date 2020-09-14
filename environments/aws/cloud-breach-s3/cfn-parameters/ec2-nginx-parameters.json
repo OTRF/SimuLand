@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "MordorVPCStackName",
+    "ParameterValue": "MordorVPCStack"
+  },
+  {
+    "ParameterKey": "MordorS3StackName",
+    "ParameterValue": "MordorS3Stack"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.micro"
+  }, 
+  {
+    "ParameterKey": "PrivateIP",
+    "ParameterValue": "192.168.1.6"
+  }
+]

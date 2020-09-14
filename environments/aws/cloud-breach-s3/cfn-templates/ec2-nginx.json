@@ -6,13 +6,21 @@
             "Type": "String",
             "Default": "Roberto Rodriguez"
         },
-        "MordorStackName": {
+        "MordorVPCStackName": {
             "Description": "Name of the active CloudFormation stack that contains the networking resources, such as the subnet and security group, that will be used in this stack.",
             "Type": "String",
             "MinLength" : 1,
             "MaxLength" : 255,
             "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
-            "Default" : "MordorVPC"
+            "Default" : "MordorVPCStack"
+        },
+        "MordorS3StackName": {
+            "Description": "Name of the stack that created the S3 bucket where we are collecting event logs from.",
+            "Type": "String",
+            "MinLength" : 1,
+            "MaxLength" : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default" : "MordorS3Stack"
         },
         "KeyName": {
             "Description" : "Name of an existing EC2 key pair for SSH access to the EC2 instance.",
@@ -67,21 +75,19 @@
                             "Version": "2012-10-17",
                             "Statement": [
                                 {
-                                "Effect": "Allow",
-                                "Action": "s3:*",
-                                "Resource": "*"
+                                    "Effect": "Allow",
+                                    "Action": "s3:*",
+                                    "Resource": "*"
                                 }
                             ]
                         }
                     }
-                ],
-                "RoleName" : "BankingWAFRole"
+                ]
             }
         },
         "EC2InstanceProfile": {
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
-                "InstanceProfileName": "EC2InstanceProfile",
                 "Roles": [ {
                     "Ref": "BankingWAFRole"
                 } ]
@@ -91,18 +97,18 @@
             "Type" : "AWS::EC2::NetworkInterface",
             "Properties" : {
                 "GroupSet": [
-                    { "Fn::ImportValue" :  {"Fn::Sub": "${MordorStackName}-Ubuntu-SecurityGroupID" } }
+                    { "Fn::ImportValue" :  {"Fn::Sub": "${MordorVPCStackName}-Ubuntu-SecurityGroupID" } }
                 ],
-                "SubnetId": { "Fn::ImportValue" : {"Fn::Sub": "${MordorStackName}-SubnetID" } },
+                "SubnetId": { "Fn::ImportValue" : {"Fn::Sub": "${MordorVPCStackName}-SubnetID" } },
                 "PrivateIpAddress": { "Ref" : "PrivateIP" }
             }
         },
-        "WebApp" : {
+        "NginxServer" : {
             "Type" : "AWS::EC2::Instance",
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "config" : [ "00-setup" ]
+                        "config" : [ "00-setup", "01-configure-nginx" ]
                     },
                     "00-setup" : {
                         "files" : {
@@ -131,7 +137,7 @@
                                             "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init\n",
                                             "action=/opt/aws/bin/cfn-init -v ",
                                             "   --stack ", { "Ref" : "AWS::StackName" },
-                                            "   --resource WebApp ",
+                                            "   --resource NginxServer ",
                                             "   --configsets config ",
                                             "   --region ", { "Ref" : "AWS::Region" }, "\n",
                                             "runas=root\n"
@@ -155,20 +161,37 @@
                                         ]
                                     ]
                                 }
+                            }
+                        }, 
+                        "commands" : {
+                            "a-enable_cfn_hup" : {
+                                "command" : "systemctl enable cfn-hup.service"
                             },
+                            "b-start_cfn_hup" : {
+                                "command" : "systemctl start cfn-hup.service"
+                            }
+                        },
+                        "packages" : {
+                            "apt" : {
+                                "nginx" : []
+                            }
+                        }
+                    },
+                    "01-configure-nginx" : {
+                        "files" : {
                             "/tmp/proxy.com" : {
                                 "content" : {
                                     "Fn::Join" : [
                                         "", 
                                         [
                                             "server {\n",
-                                                "listen 80 default_server;\n",
-                                                "if ($host != '169.254.169.254') {\n",
-                                                    "return 400 '<h1>This server is configured to proxy requests to the EC2 metadata service. Please modify your request's 'host' header and try again.</h1>';\n",
-                                                "}\n",
-                                                "location / {\n",
-                                                    "proxy_pass  http://$host;\n",
-                                                "}\n",
+                                            "   listen 80 default_server;\n",
+                                            "   if ($host != '169.254.169.254') {\n",
+                                            "       return 400 '<h1>This server is configured to proxy requests to the EC2 metadata service. Please modify your request host header and try again.</h1>';\n",
+                                            "   }\n",
+                                            "   location / {\n",
+                                            "       proxy_pass  http://$host;\n",
+                                            "   }\n",
                                             "}\n"
                                         ]
                                     ]
@@ -179,11 +202,17 @@
                             }
                         }, 
                         "commands" : {
-                            "a-enable_cfn_hup" : {
-                                "command" : "systemctl enable cfn-hup.service"
+                            "a-allow-nginx" : {
+                                "command" : "ufw allow 'Nginx HTTP'"
                             },
-                            "b-start_cfn_hup" : {
-                                "command" : "systemctl start cfn-hup.service"
+                            "b-copy-nginx-config" : {
+                                "command" : "cp /tmp/proxy.com /etc/nginx/sites-enabled/proxy.com"
+                            },
+                            "c-remove-nginx-config" : {
+                                "command" : "rm /etc/nginx/sites-enabled/default"
+                            },
+                            "d-restart-nginx" : {
+                                "command" : "systemctl restart nginx"
                             }
                         }
                     }
@@ -217,25 +246,19 @@
                                 "#!/bin/bash -xe\n",
                                 "apt-get update -y\n",
 
-                                "apt-get install -y nginx\n",
-                                "ufw allow 'Nginx HTTP'\n",
-                                "cp /tmp/proxy.com /etc/nginx/sites-enabled/proxy.com\n",
-                                "rm /etc/nginx/sites-enabled/default\n",
-                                "systemctl restart nginx\n",
-
                                 "apt-get install -y python-pip\n",
                                 "apt-get install -y python-setuptools\n",
                                 "mkdir -p /opt/aws/bin\n",
                                 "python /usr/lib/python2.7/dist-packages/easy_install.py --script-dir /opt/aws/bin https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
                                 "/opt/aws/bin/cfn-init -v ",
                                 "   --stack ", { "Ref" : "AWS::StackName" },
-                                "   --resource WebApp ",
+                                "   --resource NginxServer ",
                                 "   --configsets config ",
                                 "   --region ", { "Ref" : "AWS::Region" }, "\n",
                 
                                 "/opt/aws/bin/cfn-signal -e $? ",
                                 "   --stack ", { "Ref" : "AWS::StackName" },
-                                "   --resource WebApp ",
+                                "   --resource NginxServer ",
                                 "   --region ", { "Ref" : "AWS::Region" }, "\n"
                             ]
                         ]
@@ -251,9 +274,9 @@
         }
     },
     "Outputs" : {
-        "WebAppPublicIPAddress" : {
+        "NginxServerPublicIPAddress" : {
             "Description" : "Public IP address of the new EC2 instance",
-            "Value" : { "Fn::GetAtt" : [ "WebApp", "PublicIp" ] }
+            "Value" : { "Fn::GetAtt" : [ "NginxServer", "PublicIp" ] }
         }
     }
 }

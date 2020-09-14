@@ -1,7 +1,7 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Parameters" : {
-        "MordorStackName": {
+        "MordorS3StackName": {
             "Description": "Name of the stack that created the S3 bucket where we are collecting event logs from.",
             "Type": "String",
             "MinLength" : 1,
@@ -32,7 +32,7 @@
                                         "", [
                                           "arn:",
                                           "aws:s3:::",
-                                          { "Fn::ImportValue" : {"Fn::Sub": "${MordorStackName}-BucketName" } },
+                                          { "Fn::ImportValue" : { "Fn::Sub": "${MordorS3StackName}-BucketName" } },
                                           "/"
                                         ]
                                       ]
@@ -43,8 +43,8 @@
                         "ReadWriteType": "All"
                     }
                 ],
-                "IsMultiRegionTrail": true,
-                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": false,
+                "IncludeGlobalServiceEvents": false,
                 "S3BucketName": {
                     "Ref": "S3BucketForCloudTrail"
                 }
@@ -114,5 +114,11 @@
             }
         }
     },
-    "Outputs" : {}
+    "Outputs" : {
+        "BucketName": {
+            "Value": {"Ref": "S3BucketForCloudTrail"},
+            "Description": "Name of the S3 bucket that holds audit logs (Cloudtrail).",
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-BucketName" }}
+        }
+    }
 }

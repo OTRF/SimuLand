@@ -13,7 +13,7 @@
     "Outputs" : {
         "BucketName": {
             "Value": {"Ref": "S3Bucket"},
-            "Description": "Name of the sample Amazon S3 bucket with CORS enabled.",
+            "Description": "Name of the S3 bucket where files will be exfiltrated from.",
             "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-BucketName" }}
         }
     }
