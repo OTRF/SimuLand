@@ -1,6 +1,6 @@
 # Shire Environment
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FSimuLand%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FSimuLand%2Fmaster%2Fenvironments%2Fwindows%2Fshire%2Fazuredeploy.json)
 
 ## Network Design
 
@@ -44,8 +44,8 @@ openssl x509 -in caCert.pem -outform der | base64 | pbcopy
 * Clone the project and change your directory to windows one
 
 ```
-https://github.com/OTRF/mordor-labs
-cd mordor-labs/tree/master/environments/windows/shire
+https://github.com/OTRF/SimuLand
+cd SimuLand/tree/master/environments/windows/shire
 ```
 
 * [Install and set up Azure CLI](https://blacksmith.readthedocs.io/en/latest/azure_cli_setup.html)
@@ -90,7 +90,7 @@ brew install kafkacat
 
 ### Kafkacat Conf File Setup
 
-Make sure you update the [**Kafkacat.conf**](https://github.com/OTRF/mordor-labs/blob/master/environments/windows/kafkacat/kafkacat.conf) with the values from your environment.
+Make sure you update the [**Kafkacat.conf**](https://github.com/OTRF/SimuLand/blob/master/environments/windows/kafkacat/kafkacat.conf) with the values from your environment.
 
 **Run Kafkacat and Consume Events**
 

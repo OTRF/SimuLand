@@ -7,7 +7,7 @@ An initiative from the Open Threat Research (OTR) community to share cloud templ
 
 Think of this repository as the library of emulation/simulation plans but from an infrastructure perspective 🏗️
 
-We started by sharing ATT&CK evaluations environment templates with the community (i.e [APT29 Scenario](https://github.com/OTRF/mordor-labs/tree/master/environments/attack-evals/apt29)). Now we are expanding our scope and building more templates for other projects such as:
+We started by sharing ATT&CK evaluations environment templates with the community (i.e [APT29 Scenario](https://github.com/OTRF/SimuLand/tree/master/environments/attack-evals/apt29)). Now we are expanding our scope and building more templates for other projects such as:
 
 * [Center for Threat Informed Defense - Adversary Emulation Library](https://github.com/center-for-threat-informed-defense/adversary_emulation_library)
     * ATT&CK Evaluations

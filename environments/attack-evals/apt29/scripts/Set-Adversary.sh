@@ -59,7 +59,7 @@ else
         mv 4fb34bde-b06d-445a-a146-8e35f79ce546.yml /opt/caldera/conf/4fb34bde-b06d-445a-a146-8e35f79ce546.yml
         
         # Download Fix (Step 11)
-        wget -O /opt/caldera/data/abilities/host-provision/865b6ad9-ba59-435a-bd8f-641052fc077a.yml https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/caldera/data/abilities/host-provision/865b6ad9-ba59-435a-bd8f-641052fc077a.yml
+        wget -O /opt/caldera/data/abilities/host-provision/865b6ad9-ba59-435a-bd8f-641052fc077a.yml https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/caldera/data/abilities/host-provision/865b6ad9-ba59-435a-bd8f-641052fc077a.yml
         chmod -R 755 /opt/caldera
 
         # ********* Build *************

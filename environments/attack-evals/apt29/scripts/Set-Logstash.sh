@@ -49,11 +49,11 @@ else
     mkdir -p /opt/logstash/config
 
     echo "Downloading logstash files locally to be mounted to docker container"
-    wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/scripts/logstash-entrypoint.sh
-    wget -O /opt/logstash/pipeline/eventhub.conf https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/pipeline/eventhub.conf
-    wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/config/logstash.yml
-    wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/docker-compose.yml
-    wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/logstash/Dockerfile
+    wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/logstash/scripts/logstash-entrypoint.sh
+    wget -O /opt/logstash/pipeline/eventhub.conf https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/logstash/pipeline/eventhub.conf
+    wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/logstash/config/logstash.yml
+    wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/logstash/docker-compose.yml
+    wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/logstash/Dockerfile
 
     chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
     chmod +x /opt/logstash/scripts/logstash-entrypoint.sh

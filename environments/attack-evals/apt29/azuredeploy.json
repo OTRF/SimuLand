@@ -145,7 +145,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/mordor-labs/master/",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/SimuLand/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -738,7 +738,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -838,7 +838,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('enableWinAuditCategories')]",
                         "[variables('enablePowerShellLoggingScript')]",
@@ -868,7 +868,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-WEC.ps1",
+                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-WEC.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
@@ -920,7 +920,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('bash Set-Socat.sh -i', ' ', variables('endpoints')[4].ipAddress)]",
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-Socat.sh"
+                        "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-Socat.sh"
                     ]
                 }
             }
@@ -1054,7 +1054,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/attack-evals/apt29/scripts/Set-AD.ps1",
+                            "https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/attack-evals/apt29/scripts/Set-AD.ps1",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
                             "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"

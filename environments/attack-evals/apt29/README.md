@@ -1,6 +1,6 @@
 # APT29 Evaluations
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fattack-evals%apt29%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2Fmordor-labs%2Fmaster%2Fenvironments%2Fattack-evals%apt29%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FSimuLand%2Fmaster%2Fenvironments%2Fattack-evals%apt29%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FSimuLand%2Fmaster%2Fenvironments%2Fattack-evals%apt29%2Fazuredeploy.json)
 
 This Mordor environment was built to replicate a similar setup developed by the ATT&CK Evals team following their official [emulation plan methodology](https://github.com/mitre-attack/attack-arsenal/blob/master/adversary_emulation/APT29/Emulation_Plan/APT29_EmuPlan.pdf) and using several of the [PowerShell scripts](https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan) used for the main evaluation. The main goal of this environment is to share the free telemetry produced after executing the APT29 emulation plan scenarios and create detection research opportunities for the Infosec community.
 
@@ -50,8 +50,8 @@ openssl x509 -in caCert.pem -outform der | base64 | pbcopy
 * Clone the project and change your directory to windows one
 
 ```
-https://github.com/OTRF/mordor-labs
-cd mordor-labs/tree/master/environments/attack-evals/apt29
+https://github.com/OTRF/SimuLand
+cd SimuLand/tree/master/environments/attack-evals/apt29
 ```
 
 * [Install and set up Azure CLI](https://blacksmith.readthedocs.io/en/latest/azure_cli_setup.html)
@@ -96,7 +96,7 @@ brew install kafkacat
 
 ### Kafkacat Conf File Setup
 
-Make sure you update the [**Kafkacat.conf**](https://github.com/OTRF/mordor-labs/blob/master/environments/windows/kafkacat/kafkacat.conf) with the values from your environment.
+Make sure you update the [**Kafkacat.conf**](https://github.com/OTRF/SimuLand/blob/master/environments/windows/kafkacat/kafkacat.conf) with the values from your environment.
 
 **Run Kafkacat and Consume Events**
 

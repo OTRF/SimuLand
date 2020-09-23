@@ -182,7 +182,7 @@
                                 "command": "./Install-Docker.sh"
                             },
                             "c-download-template" : {
-                                "command": "wget https://raw.githubusercontent.com/OTRF/mordor-labs/master/environments/aws/cloud-breach-s3/kafka/docker-compose.yml"
+                                "command": "wget https://raw.githubusercontent.com/OTRF/SimuLand/master/environments/aws/cloud-breach-s3/kafka/docker-compose.yml"
                             },
                             "d-build-kafka" : {
                                 "command" : {
