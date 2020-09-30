@@ -281,7 +281,7 @@
         "prepareBoxScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Prepare-Box.ps1')]",
         "enableWinAuditCategories": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1')]",
         "enablePowerShellLoggingScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1')]",
-        "installAgentScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1')]",
+        "installAgentScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1')]",
         "downloadSACLScript": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(variables('artifactsBlacksmithLocation'), 'resources/scripts/powershell/misc/Set-StaticIP.ps1')]", 
