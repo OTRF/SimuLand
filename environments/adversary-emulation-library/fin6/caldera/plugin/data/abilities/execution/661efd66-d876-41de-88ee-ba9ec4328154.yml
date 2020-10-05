@@ -1,0 +1,31 @@
+- id: 661efd66-d876-41de-88ee-ba9ec4328154
+  name: WMIC Remote Process Execution
+  description: WMIC to execute a process on a remote host. Specify the remote IP using node parameter.  FIN6 is reported to have used WMI to execute code on remote systems.
+  tactic: execution
+  technique:
+    attack_id: T1047
+    name: Windows Management Instrumentation
+  cti_source: https://exchange.xforce.ibmcloud.com/threat-group/f8409554b71a79792ff099081bc5ac24
+  procedure_group: procedure_pos_execution
+  procedure_step: '5.3'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          wmic /node:"#{node}" process call create #{process_to_execute}
+        cleanup: |
+          wmic /node "#{node}" process where name="#{process_to_execute}" del >nul 2>&1
+  input_arguments:
+    node:
+      description: IP address
+      type: string
+      default: 172.18.39.6
+    process_to_execute:
+      description: Name or path of process to execute
+      type: string
+      default: notepad.exe
+  executors:
+  - name: command_prompt
+    elevation_required: false
+    command: wmic /node:"#{node}" process call create "#{process_to_execute}"
+    cleanup_command: wmic /node "#{node}" process where name="#{process_to_execute}" del >nul 2>&1

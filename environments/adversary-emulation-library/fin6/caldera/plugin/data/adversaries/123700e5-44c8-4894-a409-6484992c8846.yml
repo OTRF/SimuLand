@@ -1,0 +1,30 @@
+id: 123700e5-44c8-4894-a409-6484992c8846
+name: FIN6 Adversary Emulation Plan
+description: FIN6 is a financially motivated cyber crime group known for stealing credit card data and performing ransomware attacks.
+atomic_ordering:
+- e44a39ce-0651-3ddd-8f05-f83aa2ffd657
+- 5b24eef2-7a7f-4d34-8cab-e588074c59bc
+- d30692dd-779f-4a40-b947-de23dabbb033
+- 02a96c18-f700-482d-88a8-bd311f6c41dc
+- e4cdb5c6-d322-3b6e-ac8e-68b2e8a7dd4c
+- 2738b811-a360-4a4f-af9d-704343ebab4d
+- a89ea459-97ec-28fd-a552-9d305f023bbe
+- ff77db3d-ded1-48da-9885-8dfc097edec0
+- 97412b40-4940-4da1-8bff-6f11d42bca26
+- fd27fe6c-4846-4e94-aef9-f6bc21ab0f0e
+- 78d94199-7e0e-442b-81a6-32f8e419a7ac
+- e4027dff-280b-4964-82be-b35a40c4a493
+- 661efd66-d876-41de-88ee-ba9ec4328154
+- 44d82f6f-f367-4db7-aa65-a9e5717b1a21
+- 0864a91a-ae17-1cce-8b89-d4f8f2854699
+- e74554b8-0bc9-3d50-95a4-e45421925b49
+- b393c022-329a-4c52-ab1f-eb594ee8d3cd
+- f50f8f39-2fb0-4fe3-9e2d-9af38aee447d
+- e45dc48f-45f1-42d2-850c-4a15385c1646
+- 6ffca252-9eb0-4ac0-93dd-35c9e7c6fae0
+- 5599b7cf-6e8d-43c1-a311-e953dd0fbd2a
+- 5dcbd042-e8e5-4f3f-8055-7284e4d5112c
+- eb4c2ff6-3534-404c-bf1c-d864a508c162
+- c29e9cc7-b34f-46c2-bdbe-a41f757eae24
+- 0c752dce-9302-4465-805f-522650aece3f
+- d77838f6-d562-3480-ad29-2cbeee8b7b45

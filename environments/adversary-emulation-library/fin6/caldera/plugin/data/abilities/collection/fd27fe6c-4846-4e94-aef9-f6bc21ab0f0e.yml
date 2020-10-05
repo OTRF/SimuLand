@@ -1,0 +1,45 @@
+- id: fd27fe6c-4846-4e94-aef9-f6bc21ab0f0e
+  name: Compress Files with 7zip (7.exe)
+  description: Compress text files for exfiltration staging using 7zip, renamed to 7.exe
+  tactic: collection
+  technique:
+    attack_id: T1560.001
+    name: 'Archive Collected Data: Archive via Utility'
+  cti_source: https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html
+  procedure_group: procedure_collection
+  procedure_step: '4.1'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          '7.exe a -mx3 ad.7z ad_*'
+        payloads:
+        - 7.exe
+  input_arguments:
+    7_exe:
+      description: Path of 7.exe
+      type: Path
+      default: C:\ProgramData\7.exe
+    7_url:
+      description: Path to download 7zip file
+      type: URL
+      default: https://7-zip.org/a/7z1900-x64.exe
+    7_hash:
+      description: File hash of the 7 zip file
+      type: String
+      default: 0F5D4DBBE5E55B7AA31B91E5925ED901FDF46A367491D81381846F05AD54C45E
+  dependency_executor_name: powershell
+  dependencies:
+  - description: 7.exe must exist on disk at specified location (#{7_exe})
+    prereq_command: if (Test-Path \#{7_exe}) {exit 0} else {exit 1}
+    get_prereq_command: |
+      $parentpath = Split-Path "#{7_exe}"; $zippath = "$parentpath\7.zip"
+      IEX(IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/Public/Invoke-WebRequestVerifyHash.ps1")
+      if(Invoke-WebRequestVerifyHash "#{7_url}" "$zippath" \#{7_hash}) {
+      Expand-Archive $zippath $parentpath\7 -Force
+      Move-Item $parentpath\7\7.exe "#{7_exe}"
+      Remove-Item $zippath, $parentpath\7 -Recurse
+      }
+  executors:
+  - name: command_prompt
+    command: 7.exe a -mx3 ad.7z ad_*

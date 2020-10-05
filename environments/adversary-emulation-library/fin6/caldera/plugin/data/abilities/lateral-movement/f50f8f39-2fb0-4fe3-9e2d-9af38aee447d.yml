@@ -1,0 +1,23 @@
+- id: f50f8f39-2fb0-4fe3-9e2d-9af38aee447d
+  name: Copy Ransomware
+  description: FIN6 utilizes cmd to copy ransomware to an internal distribution server
+  tactic: lateral-movement
+  technique:
+    attack_id: T1021.002
+    name: 'Remote Services: SMB/Windows Admin Shares'
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_lateral_movement
+  procedure_step: 7.1.2
+  platforms:
+    windows:
+      cmd:
+        command: |
+          start copy xaa.bat \\#{internal_IP}\c$\windows\temp\
+  input_arguments:
+    internal_IP:
+      description: Hostname or IP address
+      type: string
+      default: 172.18.39.6
+  executors:
+  - name: command_prompt
+    command: start copy sss.exe \\#{internal_IP}\c$\windows\temp\

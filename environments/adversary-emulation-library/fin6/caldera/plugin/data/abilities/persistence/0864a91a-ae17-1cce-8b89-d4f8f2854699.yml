@@ -1,0 +1,30 @@
+- id: 0864a91a-ae17-1cce-8b89-d4f8f2854699
+  name: Scheduled Task Persistence
+  description: FIN6 utilizes cmd to execute Scheduled Tasks
+  tactic: persistence
+  technique:
+    attack_id: T1053.005
+    name: 'Scheduled Task/Job: Scheduled Task'
+  cti_source: https://blog.morphisec.com/new-global-attack-on-point-of-sale-systems
+  procedure_group: procedure_pos_persistence
+  procedure_step: 5.4.2
+  platforms:
+    windows:
+      cmd:
+        command: |
+          "C:\Windows\System32\schtasks.exe" /create /tn #{task_name} /tr "rundll32.exe "C:\#{path}",WorkerInstance" /sc #{schedule} /ru System"
+  input_arguments:
+    task_name:
+      description: Task Name
+      type: string
+      default: MordorTask
+    path:
+      description: Path of task to run
+      type: string
+    schedule:
+      description: Schedule for task (MINUTE, HOURLY, DAILY, WEEKLY, MONTHLY, ONCE,
+        ONSTART, ONLOGON, ONIDLE, and ONEVENT)
+      type: string
+  executors:
+  - name: command_prompt
+    command: '"C:\Windows\System32\schtasks.exe" /create /tn #{task_name} /tr "rundll32.exe "C:\#{path}",WorkerInstance" /sc #{schedule} /ru System"'

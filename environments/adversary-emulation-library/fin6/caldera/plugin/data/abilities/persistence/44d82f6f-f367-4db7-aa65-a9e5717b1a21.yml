@@ -1,0 +1,29 @@
+- id: 44d82f6f-f367-4db7-aa65-a9e5717b1a21
+  name: Registry Run Keys
+  description: FIN6 utilizes cmd to execute Registry Run Keys
+  tactic: persistence
+  technique:
+    attack_id: T1547.001
+    name: 'Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder'
+  cti_source: https://blog.morphisec.com/new-global-attack-on-point-of-sale-systems
+  procedure_group: procedure_pos_persistence
+  procedure_step: 5.4.1
+  platforms:
+    windows:
+      cmd:
+        command: |
+          '"C:\Windows\System32\reg.exe" ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v #{value_name} /t REG_SZ /d #{data} "C:\#{path},workerInstance /f'
+  input_arguments:
+    value_name:
+      description: Name of the registry entry to be added
+      type: string
+      default: Mordor
+    data:
+      description: Data for new registry entry
+      type: string
+    path:
+      description: Path
+      type: string
+  executors:
+  - name: command_prompt
+    command: '"C:\Windows\System32\reg.exe" ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v #{value_name} /t REG_SZ /d #{data} "C:\#{path},workerInstance /f'

