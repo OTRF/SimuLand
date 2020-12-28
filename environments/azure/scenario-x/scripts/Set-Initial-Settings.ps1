@@ -40,7 +40,8 @@ if ($SetupType -eq 'DC')
 {
     & .\Enable-WinAuditCategories.ps1 -SetDC
 }
-else{
+else
+{
     & .\Enable-WinAuditCategories.ps1
 }
 
