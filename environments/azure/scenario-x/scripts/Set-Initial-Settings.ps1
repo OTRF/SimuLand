@@ -7,33 +7,37 @@ param (
     [string]$ServerAddresses,
 
     [Parameter(Mandatory=$false)]
-    [switch]$SetDC,
-
-    [Parameter(Mandatory=$false)]
-    [switch]$SetADFS,
+    [ValidateSet("DC","ADFS",'Endpoint')]
+    [string]$SetupType,
 
     [Parameter(Mandatory=$false)]
     [string]$trustedCertificateName
 )
 
 # Install DSC Modules
-if ($SetDC){
+if ($SetupType -eq 'DC')
+{
     & .\Install-AD-DSC-Modules.ps1
     # Move trusted CA signed SSL certificate
     Move-Item $trustedCertificateName C:\ProgramData\
 }
-
-if ($SetADFS){
+elseif ($SetupType -eq 'ADFS')
+{
     & .\Install-ADFS-DSC-Modules.ps1
     # Move trusted CA signed SSL certificate
     Move-Item $trustedCertificateName C:\ProgramData\
+}
+else 
+{
+    & .\Install-Endpoint-DSC-Modules.ps1
 }
 
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
 # Windows Security Audit Categories
-if ($SetDC){
+if ($SetupType -eq 'DC')
+{
     & .\Enable-WinAuditCategories.ps1 -SetDC
 }
 else{
@@ -48,9 +52,3 @@ else{
 
 # Set Wallpaper
 & .\Set-WallPaper.ps1
-
-# Setting static IP and DNS server IP
-if ($ServerAddresses)
-{
-    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
-}
