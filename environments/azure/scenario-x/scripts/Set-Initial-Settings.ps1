@@ -21,7 +21,7 @@ param (
 # Install DSC Modules
 & .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
-if (($SetupType -eq 'DS') -or ($SetupType -eq 'ADFS'))
+if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
 {
     if ($CertificateType -eq 'Trusted')
     {
