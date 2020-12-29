@@ -19,14 +19,10 @@ param (
 )
 
 # Install DSC Modules
-if ($SetupType -eq 'Endpoint')
-{
-    & .\Install-DSC-Modules.ps1 -SetupType $SetupType
-}
-else
-{
-    & .\Install-DSC-Modules.ps1 -SetupType $SetupType -CertificateType $CertificateType
+& .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
+if (($SetupType -eq 'DS') -or ($SetupType -eq 'ADFS'))
+{
     if ($CertificateType -eq 'Trusted')
     {
         # Move trusted CA signed SSL certificate
