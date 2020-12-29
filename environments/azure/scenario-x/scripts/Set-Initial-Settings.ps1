@@ -6,30 +6,32 @@ param (
     [Parameter(Mandatory=$false)]
     [string]$ServerAddresses,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory)]
     [ValidateSet("DC","ADFS",'Endpoint')]
     [string]$SetupType,
 
     [Parameter(Mandatory=$false)]
-    [string]$trustedCertificateName
+    [ValidateSet('TrustedSigned','SelfSigned')]
+    [string]$CertificateType,
+
+    [Parameter(Mandatory=$false)]
+    [string]$CertificateName
 )
 
 # Install DSC Modules
-if ($SetupType -eq 'DC')
+if ($SetupType -eq 'Endpoint')
 {
-    & .\Install-AD-DSC-Modules.ps1
-    # Move trusted CA signed SSL certificate
-    Move-Item $trustedCertificateName C:\ProgramData\
+    & .\Install-DSC-Modules.ps1 -SetupType $SetupType
 }
-elseif ($SetupType -eq 'ADFS')
+else
 {
-    & .\Install-ADFS-DSC-Modules.ps1
-    # Move trusted CA signed SSL certificate
-    Move-Item $trustedCertificateName C:\ProgramData\
-}
-else 
-{
-    & .\Install-Endpoint-DSC-Modules.ps1
+    & .\Install-DSC-Modules.ps1 -SetupType $SetupType -CertificateType $CertificateType
+
+    if ($CertificateType -eq 'Trusted')
+    {
+        # Move trusted CA signed SSL certificate
+        Move-Item $CertificateName C:\ProgramData\
+    }
 }
 
 # Custom Settings applied
