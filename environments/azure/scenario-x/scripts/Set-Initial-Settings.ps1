@@ -23,7 +23,7 @@ param (
 
 if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
 {
-    if ($CertificateType -eq 'Trusted')
+    if ($CertificateType -eq 'TrustedSigned')
     {
         # Move trusted CA signed SSL certificate
         Move-Item $CertificateName C:\ProgramData\
